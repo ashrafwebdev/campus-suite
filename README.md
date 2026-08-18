@@ -1,8 +1,9 @@
 # Campus Suite
 
-A modular school/college/university management backend, built with **FastAPI** +
-**SQLAlchemy** + **Alembic**. Rebuilt from scratch in Python (previous version
-was Laravel/PHP).
+A modular school/college/university management backend covering the full
+institutional pipeline — admissions, academics, exams, fees, hostel,
+transport, library, certificates, and HR/payroll — built with **FastAPI** +
+**SQLAlchemy** + **Alembic**.
 
 ## Stack
 
