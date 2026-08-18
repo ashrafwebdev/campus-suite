@@ -79,6 +79,23 @@ PERMISSIONS = [
     ("transport.allocation", "Transport Allocation View", "Transport"),
     ("transport.allocation_store", "Transport Allocation Create", "Transport"),
     ("transport.allocation_end", "Transport Allocation End", "Transport"),
+    ("exam.index", "Exam View", "Exam"),
+    ("exam.store", "Exam Create", "Exam"),
+    ("exam.update", "Exam Edit", "Exam"),
+    ("exam.destroy", "Exam Delete", "Exam"),
+    ("exam.grade", "Grade Scale View", "Exam"),
+    ("exam.grade_store", "Grade Scale Create", "Exam"),
+    ("exam.grade_update", "Grade Scale Edit", "Exam"),
+    ("exam.grade_destroy", "Grade Scale Delete", "Exam"),
+    ("exam.rule", "Exam Rule View", "Exam"),
+    ("exam.rule_store", "Exam Rule Create", "Exam"),
+    ("exam.rule_update", "Exam Rule Edit", "Exam"),
+    ("exam.rule_destroy", "Exam Rule Delete", "Exam"),
+    ("exam.mark", "Mark View", "Exam"),
+    ("exam.mark_store", "Mark Record", "Exam"),
+    ("exam.result", "Result View", "Exam"),
+    ("exam.result_generate", "Result Generate", "Exam"),
+    ("exam.result_destroy", "Result Delete", "Exam"),
 ]
 
 

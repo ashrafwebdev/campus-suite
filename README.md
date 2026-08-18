@@ -46,9 +46,18 @@ was Laravel/PHP).
   enforces one active allocation per student, seat capacity per route, a
   vehicle actually assigned to the route, and that a chosen stop belongs to
   the route being booked. Ending an allocation frees the seat.
+- **Exams & results**: exams, grade scales (percentage bands → letter grade
+  + GPA point), exam rules (total/pass marks per exam+class+subject), marks
+  (upserted per student+exam+subject), and generated results. Recording a
+  mark is validated against the matching exam rule (range-checked against
+  `total_marks`); generating a result requires every configured subject to
+  have a mark recorded first, and fails the student overall (grade `F`) if
+  *any* single subject is below its own pass mark or the student was marked
+  absent — even when the combined percentage would otherwise land in a
+  passing band. Regenerating a result upserts in place rather than creating
+  a duplicate row.
 
-More modules (exams & results,
-certificates/course-completion, HR/payroll) are planned to follow the same
+More modules (certificates/course-completion, HR/payroll) are planned to follow the same
 pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
 `app/api/v1/router.py`.
 

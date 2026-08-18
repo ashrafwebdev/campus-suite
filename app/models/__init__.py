@@ -7,6 +7,7 @@ from app.models.hostel import Hostel, HostelRoom, HostelAllocation
 from app.models.fee import FeeHead, Invoice, Payment
 from app.models.library import Book, BookIssue
 from app.models.transport import Vehicle, Route, RouteStop, TransportAllocation
+from app.models.exam import Exam, GradeScale, ExamRule, Mark, Result
 
 __all__ = [
     "User",
@@ -30,4 +31,9 @@ __all__ = [
     "Route",
     "RouteStop",
     "TransportAllocation",
+    "Exam",
+    "GradeScale",
+    "ExamRule",
+    "Mark",
+    "Result",
 ]
