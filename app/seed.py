@@ -60,6 +60,14 @@ PERMISSIONS = [
     ("fee.invoice_cancel", "Invoice Cancel", "Fee"),
     ("fee.payment", "Payment View", "Fee"),
     ("fee.payment_store", "Payment Record", "Fee"),
+    ("library.book", "Book View", "Library"),
+    ("library.book_store", "Book Create", "Library"),
+    ("library.book_update", "Book Edit", "Library"),
+    ("library.book_destroy", "Book Delete", "Library"),
+    ("library.issue", "Book Issue View", "Library"),
+    ("library.issue_store", "Book Issue", "Library"),
+    ("library.issue_return", "Book Return", "Library"),
+    ("library.issue_lost", "Book Mark Lost", "Library"),
 ]
 
 

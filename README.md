@@ -34,8 +34,14 @@ was Laravel/PHP).
   balance and flips invoice status Unpaid → Partial → Paid; an invoice can
   only be cancelled if it has no payments yet. Amounts use `Numeric(10,2)`
   end to end, not float, so balances never drift by a cent.
+- **Library**: books (with `total_copies`) and issue/return/lost tracking.
+  `available_copies` is always computed live from outstanding issues
+  (Issued + Lost both count against it — a lost copy stays unavailable
+  permanently, unlike a return), never a stored counter. Issuing checks
+  availability and blocks a student from double-borrowing the same book;
+  returning after the due date charges a per-day fine automatically.
 
-More modules (library, transport, exams & results,
+More modules (transport, exams & results,
 certificates/course-completion, HR/payroll) are planned to follow the same
 pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
 `app/api/v1/router.py`.
