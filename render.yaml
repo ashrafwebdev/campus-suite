@@ -17,6 +17,11 @@ services:
         value: "true"
       - key: FIRST_ADMIN_EMAIL
         value: admin@example.com
+      # Update this once the frontend is deployed, to its real URL(s)
+      # (comma-separated). Left at localhost so local frontend dev against
+      # this deployed API works out of the box.
+      - key: CORS_ORIGINS
+        value: http://localhost:5173,http://127.0.0.1:5173
       # Set these in the Render dashboard (marked sync: false so Render
       # prompts for them instead of committing secrets to this file):
       - key: DATABASE_URL

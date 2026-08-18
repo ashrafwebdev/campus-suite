@@ -103,6 +103,16 @@ Open `http://127.0.0.1:8000/docs` for interactive API docs.
 Default admin login (from `.env.example`, change before deploying):
 `admin@example.com` / `changeme123`
 
+## Frontend
+
+`frontend/` is a React + TypeScript + Vite app that talks to this API —
+login, dashboard, Admissions (create enquiry → convert to student), and
+Students (including day scholar / hosteller with hostel room number) are
+working today; the rest of the modules above have working APIs but no UI
+yet. See `frontend/README.md` to run it. It needs this backend running
+with its origin allowed in `CORS_ORIGINS` (`http://localhost:5173` is
+already the default for local dev).
+
 ## Deployment
 
 ### Free path: Render + Neon (no credit card)
