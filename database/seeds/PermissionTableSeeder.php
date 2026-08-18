@@ -399,6 +399,41 @@ class PermissionTableSeeder extends Seeder
             //student attendance end
         ];
 
+        $admissionPermissionList = [
+            [   "slug" => "admission.enquiry",
+                "name" => "Admission Enquiry View",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_destroy",
+                "name" => "Admission Enquiry Delete",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_create",
+                "name" => "Admission Enquiry Create",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_store",
+                "name" => "Admission Enquiry Create",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_edit",
+                "name" => "Admission Enquiry Edit",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_update",
+                "name" => "Admission Enquiry Edit",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_status",
+                "name" => "Admission Enquiry Edit",
+                "group" => "Admission"
+            ],
+            [   "slug" => "admission.enquiry_convert",
+                "name" => "Admission Enquiry Convert To Student",
+                "group" => "Admission"
+            ],
+        ];
+
         $websitePermissionList = [
             [
                 "slug" => "class_profile.index",
@@ -899,7 +934,7 @@ class PermissionTableSeeder extends Seeder
 
         //merge all permissions and insert into db
         $permissions = array_merge($commonPermissionList, $exclusiveAdministratorPermissionList,
-            $administratorPermissionList, $academicPermissionList, $websitePermissionList, $hrmPermissionList,
+            $administratorPermissionList, $academicPermissionList, $admissionPermissionList, $websitePermissionList, $hrmPermissionList,
             $examPermissionList, $reportsPermissionList);
 
 

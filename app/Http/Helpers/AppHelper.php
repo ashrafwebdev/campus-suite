@@ -146,6 +146,23 @@ class AppHelper
     ];
     const PASSING_RULES = [1 => 'Over All', 2 => 'Individual', 3 => 'Over All & Individual'];
 
+    const ADMISSION_ENQUIRY_STATUS = [
+        1 => 'New',
+        2 => 'Contacted',
+        3 => 'Follow Up',
+        4 => 'Admitted',
+        5 => 'Rejected',
+    ];
+
+    const ADMISSION_ENQUIRY_SOURCE = [
+        1 => 'Advertisement',
+        2 => 'Website',
+        3 => 'Referral',
+        4 => 'Walk-in',
+        5 => 'Social Media',
+        6 => 'Other',
+    ];
+
 
     /**
      * Get institution category for app settings

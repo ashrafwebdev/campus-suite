@@ -50,3 +50,6 @@ window.Reports = Reports;
 
 import HRM from './hrm';
 window.HRM = HRM;
+
+import Admission from './Admission';
+window.Admission = Admission;

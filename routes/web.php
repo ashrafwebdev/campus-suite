@@ -182,6 +182,24 @@ Route::group(
     Route::post('teacher/status/{id}', 'TeacherController@changeStatus')
         ->name('teacher.status');
 
+    // admission enquiry (CRM) routes
+    Route::get('admission/enquiry', 'AdmissionController@index')
+        ->name('admission.enquiry');
+    Route::post('admission/enquiry', 'AdmissionController@index')
+        ->name('admission.enquiry_destroy');
+    Route::get('admission/enquiry/create', 'AdmissionController@cru')
+        ->name('admission.enquiry_create');
+    Route::post('admission/enquiry/create', 'AdmissionController@cru')
+        ->name('admission.enquiry_store');
+    Route::get('admission/enquiry/edit/{id}', 'AdmissionController@cru')
+        ->name('admission.enquiry_edit');
+    Route::post('admission/enquiry/update/{id}', 'AdmissionController@cru')
+        ->name('admission.enquiry_update');
+    Route::post('admission/enquiry/status/{id}', 'AdmissionController@changeStatus')
+        ->name('admission.enquiry_status');
+    Route::get('admission/enquiry/{id}/convert', 'AdmissionController@convert')
+        ->name('admission.enquiry_convert');
+
     // student routes
     Route::resource('student', 'StudentController');
     Route::post('student/status/{id}', 'StudentController@changeStatus')

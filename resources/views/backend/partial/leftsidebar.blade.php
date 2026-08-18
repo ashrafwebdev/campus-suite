@@ -16,6 +16,13 @@
                     </a>
                 </li>
             @endrole
+            @can('admission.enquiry')
+                <li>
+                    <a href="{{ URL::route('admission.enquiry') }}">
+                        <i class="fa fa-address-card"></i> <span>Admission Enquiry</span>
+                    </a>
+                </li>
+            @endcan
             @can('student.index')
                 <li>
                     <a href="{{ URL::route('student.index') }}">
