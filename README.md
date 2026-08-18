@@ -64,10 +64,23 @@ was Laravel/PHP).
   course-completion pipeline end to end); issuing also blocks a second
   *active* certificate of the same type for the same student, but revoking
   one frees that type up for reissue.
+- **HR & payroll**: employees (optionally linked one-to-one to a login
+  `User`), leave requests, and monthly payroll. A leave request can only be
+  decided (approved/rejected) once — deciding an already-decided request is
+  rejected, not silently overwritten. Payroll generation is deduplicated
+  per employee+month+year, computes `net_salary = basic_salary + allowances
+  - deductions`, blocks a negative net salary, and only pays employees who
+  are still Active; marking paid is a one-way transition (can't un-pay or
+  double-pay).
 
-More modules (HR/payroll) are planned to follow the same
-pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
-`app/api/v1/router.py`.
+This covers the full pipeline the project set out to build: **advertisement
+→ admission enquiry → enrolled student → academics/exams → fees → hostel/
+transport/library services → course completion certificate**, plus the HR
+side (staff, leave, payroll) running alongside it. Every module above
+follows the same pattern — SQLAlchemy model → Pydantic schemas → CRUD →
+router, registered in `app/api/v1/router.py` — so extending the system
+(a new fee type, a new certificate rule, a whole new module) means adding
+to that same stack rather than learning a new one.
 
 ## Getting started
 

@@ -103,6 +103,16 @@ PERMISSIONS = [
     ("certificate.index", "Certificate View", "Certificate"),
     ("certificate.store", "Certificate Issue", "Certificate"),
     ("certificate.revoke", "Certificate Revoke", "Certificate"),
+    ("hr.employee", "Employee View", "HR"),
+    ("hr.employee_store", "Employee Create", "HR"),
+    ("hr.employee_update", "Employee Edit", "HR"),
+    ("hr.employee_destroy", "Employee Delete", "HR"),
+    ("hr.leave", "Leave Request View", "HR"),
+    ("hr.leave_store", "Leave Request Create", "HR"),
+    ("hr.leave_decide", "Leave Request Approve/Reject", "HR"),
+    ("hr.payroll", "Payroll View", "HR"),
+    ("hr.payroll_generate", "Payroll Generate", "HR"),
+    ("hr.payroll_pay", "Payroll Mark Paid", "HR"),
 ]
 
 

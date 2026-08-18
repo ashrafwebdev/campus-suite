@@ -9,6 +9,7 @@ from app.models.library import Book, BookIssue
 from app.models.transport import Vehicle, Route, RouteStop, TransportAllocation
 from app.models.exam import Exam, GradeScale, ExamRule, Mark, Result
 from app.models.certificate import CertificateType, Certificate
+from app.models.hr import Employee, LeaveRequest, Payroll
 
 __all__ = [
     "User",
@@ -39,4 +40,7 @@ __all__ = [
     "Result",
     "CertificateType",
     "Certificate",
+    "Employee",
+    "LeaveRequest",
+    "Payroll",
 ]
