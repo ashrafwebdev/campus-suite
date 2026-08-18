@@ -56,8 +56,16 @@ was Laravel/PHP).
   absent — even when the combined percentage would otherwise land in a
   passing band. Regenerating a result upserts in place rather than creating
   a duplicate row.
+- **Certificates & course completion**: certificate types (e.g. Course
+  Completion, Transfer, Character), each optionally flagged
+  `requires_graduation`, and issued certificates per student. A type
+  flagged `requires_graduation` can only be issued to a student whose
+  `status` is Graduated (closing the admission → enrollment → exams →
+  course-completion pipeline end to end); issuing also blocks a second
+  *active* certificate of the same type for the same student, but revoking
+  one frees that type up for reissue.
 
-More modules (certificates/course-completion, HR/payroll) are planned to follow the same
+More modules (HR/payroll) are planned to follow the same
 pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
 `app/api/v1/router.py`.
 

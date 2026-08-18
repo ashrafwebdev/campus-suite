@@ -96,6 +96,13 @@ PERMISSIONS = [
     ("exam.result", "Result View", "Exam"),
     ("exam.result_generate", "Result Generate", "Exam"),
     ("exam.result_destroy", "Result Delete", "Exam"),
+    ("certificate.type", "Certificate Type View", "Certificate"),
+    ("certificate.type_store", "Certificate Type Create", "Certificate"),
+    ("certificate.type_update", "Certificate Type Edit", "Certificate"),
+    ("certificate.type_destroy", "Certificate Type Delete", "Certificate"),
+    ("certificate.index", "Certificate View", "Certificate"),
+    ("certificate.store", "Certificate Issue", "Certificate"),
+    ("certificate.revoke", "Certificate Revoke", "Certificate"),
 ]
 
 
