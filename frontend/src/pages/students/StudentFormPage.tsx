@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
-import { RESIDENCY_TYPE, type StudentCreate } from '../../types/api'
+import { RESIDENCY_TYPE, type SchoolClass, type StudentCreate } from '../../types/api'
 
 const emptyForm: StudentCreate = {
   name: '',
@@ -14,12 +14,18 @@ const emptyForm: StudentCreate = {
   permanent_address: '',
   residency_type: 1,
   hostel_room_no: '',
+  class_id: null,
 }
 
 export function StudentFormPage() {
   const [form, setForm] = useState<StudentCreate>(emptyForm)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  const classesQuery = useQuery({
+    queryKey: ['classes'],
+    queryFn: async () => (await api.get<SchoolClass[]>('/academic/classes')).data,
+  })
 
   const createMutation = useMutation({
     mutationFn: async (payload: StudentCreate) => (await api.post('/students', payload)).data,
@@ -88,6 +94,21 @@ export function StudentFormPage() {
             className="input"
             rows={2}
           />
+        </Field>
+
+        <Field label="Class">
+          <select
+            value={form.class_id ?? ''}
+            onChange={(e) => update('class_id', e.target.value ? Number(e.target.value) : null)}
+            className="input"
+          >
+            <option value="">Unassigned</option>
+            {classesQuery.data?.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </Field>
 
         <div className="grid grid-cols-2 gap-4">

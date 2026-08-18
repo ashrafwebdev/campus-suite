@@ -11,13 +11,14 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard', enabled: true },
   { to: '/admissions', label: 'Admissions', enabled: true },
   { to: '/students', label: 'Students', enabled: true },
-  { to: '/hostel', label: 'Hostel', enabled: false },
-  { to: '/fees', label: 'Fees & Finance', enabled: false },
-  { to: '/library', label: 'Library', enabled: false },
-  { to: '/transport', label: 'Transport', enabled: false },
-  { to: '/exams', label: 'Exams & Results', enabled: false },
-  { to: '/certificates', label: 'Certificates', enabled: false },
-  { to: '/hr', label: 'HR & Payroll', enabled: false },
+  { to: '/academic', label: 'Academic', enabled: true },
+  { to: '/hostel', label: 'Hostel', enabled: true },
+  { to: '/fees', label: 'Fees & Finance', enabled: true },
+  { to: '/library', label: 'Library', enabled: true },
+  { to: '/transport', label: 'Transport', enabled: true },
+  { to: '/exams', label: 'Exams & Results', enabled: true },
+  { to: '/certificates', label: 'Certificates', enabled: true },
+  { to: '/hr', label: 'HR & Payroll', enabled: true },
 ]
 
 export function AppLayout() {
