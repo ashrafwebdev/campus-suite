@@ -1,0 +1,16 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Not a secret -- it's baked into the client bundle either way. Change
+  # this if the backend URL ever changes.
+  VITE_API_URL = "https://campus-suite-api.onrender.com"
+
+# React Router client-side routes (e.g. /admissions) aren't real files on
+# the static host -- send every path to index.html and let the SPA route it.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

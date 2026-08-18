@@ -45,6 +45,32 @@ reverse proxy as the API). Set `VITE_API_URL` to the deployed backend's
 URL at build time, and add the deployed frontend's URL to the backend's
 `CORS_ORIGINS`.
 
+## Deploying (free, no card)
+
+`netlify.toml` and `vercel.json` at the repo root already point at
+`frontend/`, set the production `VITE_API_URL` to the live Render backend,
+and add the SPA fallback rewrite React Router needs (without it, refreshing
+on e.g. `/admissions` 404s on a plain static host — confirmed locally
+before shipping these configs). Either platform needs only:
+
+**Netlify:**
+1. netlify.com → sign up (GitHub, no card) → **Add new site → Import an
+   existing project** → pick this repo.
+2. It reads `netlify.toml` automatically — base directory, build command,
+   publish directory, env var, and the redirect rule are all already set.
+   Just click deploy.
+
+**Vercel:**
+1. vercel.com → sign up (GitHub, no card) → **Add New → Project** → pick
+   this repo.
+2. It reads `vercel.json` automatically — same deal, no fields to fill in.
+   Deploy.
+
+Either way, once you have the live frontend URL, add it to the backend's
+`CORS_ORIGINS` on Render (comma-separated with the existing values) and
+redeploy the backend, or browser requests from the deployed frontend will
+be blocked.
+
 ## Adding a page for another module
 
 1. Add types to `src/types/api.ts` matching the backend's Pydantic schemas.
