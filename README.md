@@ -27,8 +27,15 @@ was Laravel/PHP).
   Allocating a student enforces one active allocation per student and
   capacity per room, and flips the student's `residency_type` to hosteller
   (setting `hostel_room_no`); vacating reverts both.
+- **Fees & finance**: fee heads (categories), invoices, and payments.
+  Invoice balance is `amount + fine - discount - paid`, always computed
+  from the sum of payments (never a stored running total, so it can't drift
+  out of sync). Recording a payment rejects amounts over the remaining
+  balance and flips invoice status Unpaid → Partial → Paid; an invoice can
+  only be cancelled if it has no payments yet. Amounts use `Numeric(10,2)`
+  end to end, not float, so balances never drift by a cent.
 
-More modules (fees/finance, library, transport, exams & results,
+More modules (library, transport, exams & results,
 certificates/course-completion, HR/payroll) are planned to follow the same
 pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
 `app/api/v1/router.py`.

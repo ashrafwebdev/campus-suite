@@ -51,6 +51,15 @@ PERMISSIONS = [
     ("hostel.allocation", "Hostel Allocation View", "Hostel"),
     ("hostel.allocation_store", "Hostel Allocation Create", "Hostel"),
     ("hostel.allocation_vacate", "Hostel Allocation Vacate", "Hostel"),
+    ("fee.head", "Fee Head View", "Fee"),
+    ("fee.head_store", "Fee Head Create", "Fee"),
+    ("fee.head_update", "Fee Head Edit", "Fee"),
+    ("fee.head_destroy", "Fee Head Delete", "Fee"),
+    ("fee.invoice", "Invoice View", "Fee"),
+    ("fee.invoice_store", "Invoice Create", "Fee"),
+    ("fee.invoice_cancel", "Invoice Cancel", "Fee"),
+    ("fee.payment", "Payment View", "Fee"),
+    ("fee.payment_store", "Payment Record", "Fee"),
 ]
 
 
