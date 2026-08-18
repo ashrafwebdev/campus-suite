@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
+import { TableToolbar } from '../../components/ui'
 import { ADMISSION_SOURCE, ADMISSION_STATUS, type AdmissionEnquiry } from '../../types/api'
 
 const STATUS_COLORS: Record<number, string> = {
@@ -53,23 +54,37 @@ export function AdmissionsListPage() {
         </Link>
       </div>
 
-      <div className="mt-5 flex items-center gap-2">
-        <label htmlFor="status" className="text-sm font-medium text-slate-600">
-          Status
-        </label>
-        <select
-          id="status"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value ? Number(e.target.value) : '')}
-          className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
-        >
-          <option value="">All</option>
-          {Object.entries(ADMISSION_STATUS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <label htmlFor="status" className="text-sm font-medium text-slate-600">
+            Status
+          </label>
+          <select
+            id="status"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value ? Number(e.target.value) : '')}
+            className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
+          >
+            <option value="">All</option>
+            {Object.entries(ADMISSION_STATUS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <TableToolbar
+          title="Admission Enquiries"
+          filename="admission-enquiries"
+          rows={data}
+          columns={[
+            { label: 'Enquiry', value: (e) => e.enquiry_no },
+            { label: 'Name', value: (e) => e.name },
+            { label: 'Phone', value: (e) => e.phone_no },
+            { label: 'Source', value: (e) => ADMISSION_SOURCE[e.source] },
+            { label: 'Status', value: (e) => ADMISSION_STATUS[e.status] },
+          ]}
+        />
       </div>
 
       {convertMutation.isError && (

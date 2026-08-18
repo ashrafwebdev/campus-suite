@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import {
   EMPLOYEE_STATUS,
   LEAVE_STATUS,
@@ -34,7 +34,24 @@ function EmployeesSection() {
   })
 
   return (
-    <SectionCard title="Employees" description="Teaching and non-teaching staff.">
+    <SectionCard
+      title="Employees"
+      description="Teaching and non-teaching staff."
+      action={
+        <TableToolbar
+          title="Employees"
+          filename="employees"
+          rows={data}
+          columns={[
+            { label: 'Employee No.', value: (e) => e.employee_no },
+            { label: 'Name', value: (e) => e.name },
+            { label: 'Designation', value: (e) => e.designation },
+            { label: 'Basic Salary', value: (e) => e.basic_salary },
+            { label: 'Status', value: (e) => EMPLOYEE_STATUS[e.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -128,7 +145,24 @@ function LeaveRequestsSection() {
   const statusColor = { 1: 'amber', 2: 'emerald', 3: 'red' } as const
 
   return (
-    <SectionCard title="Leave Requests" description="Approve or reject pending requests.">
+    <SectionCard
+      title="Leave Requests"
+      description="Approve or reject pending requests."
+      action={
+        <TableToolbar
+          title="Leave Requests"
+          filename="leave-requests"
+          rows={data}
+          columns={[
+            { label: 'Employee', value: (l) => employeeById.get(l.employee_id) ?? `#${l.employee_id}` },
+            { label: 'Type', value: (l) => LEAVE_TYPE[l.leave_type] },
+            { label: 'Start date', value: (l) => l.start_date },
+            { label: 'End date', value: (l) => l.end_date },
+            { label: 'Status', value: (l) => LEAVE_STATUS[l.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -256,7 +290,24 @@ function PayrollSection() {
   const employeeById = new Map((employeesQuery.data ?? []).map((e) => [e.id, e.name]))
 
   return (
-    <SectionCard title="Payroll" description="Generate a month's payroll from the employee's basic salary, then mark it paid.">
+    <SectionCard
+      title="Payroll"
+      description="Generate a month's payroll from the employee's basic salary, then mark it paid."
+      action={
+        <TableToolbar
+          title="Payroll"
+          filename="payroll"
+          rows={data}
+          columns={[
+            { label: 'Employee', value: (p) => employeeById.get(p.employee_id) ?? `#${p.employee_id}` },
+            { label: 'Month', value: (p) => p.month },
+            { label: 'Year', value: (p) => p.year },
+            { label: 'Net Salary', value: (p) => p.net_salary },
+            { label: 'Status', value: (p) => PAYROLL_STATUS[p.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

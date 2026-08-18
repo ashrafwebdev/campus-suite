@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Field, SectionCard, Table, PrimaryButton, ErrorNote } from '../../components/ui'
+import { Field, SectionCard, Table, TableToolbar, PrimaryButton, ErrorNote } from '../../components/ui'
 import { SUBJECT_TYPE, type SchoolClass, type SchoolClassCreate, type Subject, type SubjectCreate } from '../../types/api'
 
 function ClassesSection() {
@@ -28,7 +28,21 @@ function ClassesSection() {
   }
 
   return (
-    <SectionCard title="Classes" description="Grades / year levels, e.g. Class 5, Grade 10.">
+    <SectionCard
+      title="Classes"
+      description="Grades / year levels, e.g. Class 5, Grade 10."
+      action={
+        <TableToolbar
+          title="Classes"
+          filename="classes"
+          rows={data}
+          columns={[
+            { label: 'Name', value: (c) => c.name },
+            { label: 'Order', value: (c) => c.order },
+          ]}
+        />
+      }
+    >
       <form onSubmit={handleSubmit} className="mb-4 flex items-end gap-2">
         <div className="flex-1">
           <Field label="Class name" required>
@@ -83,7 +97,23 @@ function SubjectsSection() {
   const classById = new Map((classesQuery.data ?? []).map((c) => [c.id, c.name]))
 
   return (
-    <SectionCard title="Subjects" description="Belong to a class; used by exam rules.">
+    <SectionCard
+      title="Subjects"
+      description="Belong to a class; used by exam rules."
+      action={
+        <TableToolbar
+          title="Subjects"
+          filename="subjects"
+          rows={data}
+          columns={[
+            { label: 'Name', value: (s) => s.name },
+            { label: 'Code', value: (s) => s.code },
+            { label: 'Class', value: (s) => classById.get(s.class_id) ?? `#${s.class_id}` },
+            { label: 'Type', value: (s) => SUBJECT_TYPE[s.subject_type] },
+          ]}
+        />
+      }
+    >
       <form onSubmit={handleSubmit} className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Name" required>
           <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" />

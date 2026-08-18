@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
+import { TableToolbar } from '../../components/ui'
 import { RESIDENCY_TYPE, STUDENT_STATUS, type Student } from '../../types/api'
 
 export function StudentsListPage() {
@@ -24,7 +25,22 @@ export function StudentsListPage() {
         </Link>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <div className="mt-5 flex justify-end">
+        <TableToolbar
+          title="Students"
+          filename="students"
+          rows={data}
+          columns={[
+            { label: 'Admission No.', value: (s) => s.admission_no },
+            { label: 'Name', value: (s) => s.name },
+            { label: 'Phone', value: (s) => s.phone_no ?? '' },
+            { label: 'Residency', value: (s) => RESIDENCY_TYPE[s.residency_type] },
+            { label: 'Status', value: (s) => STUDENT_STATUS[s.status] },
+          ]}
+        />
+      </div>
+
+      <div className="mt-3 overflow-hidden rounded-lg border border-slate-200 bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>

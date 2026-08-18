@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { apiErrorMessage } from '../lib/api'
+import { exportCsv, printTable, type ExportColumn } from '../lib/export'
 
 export function Field({
   label,
@@ -113,6 +114,30 @@ export function Table({
           {children}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+export function TableToolbar<T>({
+  title,
+  filename,
+  columns,
+  rows,
+}: {
+  title: string
+  filename: string
+  columns: ExportColumn<T>[]
+  rows: T[] | undefined
+}) {
+  const data = rows ?? []
+  return (
+    <div className="flex gap-2">
+      <SecondaryButton type="button" disabled={data.length === 0} onClick={() => printTable(title, columns, data)}>
+        Print
+      </SecondaryButton>
+      <SecondaryButton type="button" disabled={data.length === 0} onClick={() => exportCsv(filename, columns, data)}>
+        Export
+      </SecondaryButton>
     </div>
   )
 }

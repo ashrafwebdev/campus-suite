@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { Student } from '../../types/api'
 import {
   INVOICE_STATUS,
@@ -32,7 +32,13 @@ function FeeHeadsSection() {
   })
 
   return (
-    <SectionCard title="Fee Heads" description="Categories, e.g. Tuition Fee, Exam Fee, Transport Fee.">
+    <SectionCard
+      title="Fee Heads"
+      description="Categories, e.g. Tuition Fee, Exam Fee, Transport Fee."
+      action={
+        <TableToolbar title="Fee Heads" filename="fee-heads" rows={data} columns={[{ label: 'Name', value: (fh) => fh.name }]} />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -109,7 +115,25 @@ function InvoicesSection() {
   const statusColor = { 1: 'amber', 2: 'blue', 3: 'emerald', 4: 'slate' } as const
 
   return (
-    <SectionCard title="Invoices" description="Balance is always computed live from recorded payments.">
+    <SectionCard
+      title="Invoices"
+      description="Balance is always computed live from recorded payments."
+      action={
+        <TableToolbar
+          title="Invoices"
+          filename="invoices"
+          rows={data}
+          columns={[
+            { label: 'Invoice', value: (inv) => inv.invoice_no },
+            { label: 'Student', value: (inv) => studentById.get(inv.student_id) ?? `#${inv.student_id}` },
+            { label: 'Fee Head', value: (inv) => feeHeadById.get(inv.fee_head_id) ?? `#${inv.fee_head_id}` },
+            { label: 'Amount', value: (inv) => inv.amount },
+            { label: 'Balance', value: (inv) => inv.balance },
+            { label: 'Status', value: (inv) => INVOICE_STATUS[inv.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

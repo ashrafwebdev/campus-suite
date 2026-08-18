@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { SchoolClass, Student, Subject } from '../../types/api'
 import {
   type Exam,
@@ -33,7 +33,11 @@ function ExamsSection() {
   })
 
   return (
-    <SectionCard title="Exams" description="e.g. Mid Term, Final Term.">
+    <SectionCard
+      title="Exams"
+      description="e.g. Mid Term, Final Term."
+      action={<TableToolbar title="Exams" filename="exams" rows={data} columns={[{ label: 'Name', value: (e) => e.name }]} />}
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -80,7 +84,23 @@ function GradeScalesSection() {
   })
 
   return (
-    <SectionCard title="Grade Scales" description="Percentage bands mapped to a letter grade and GPA point.">
+    <SectionCard
+      title="Grade Scales"
+      description="Percentage bands mapped to a letter grade and GPA point."
+      action={
+        <TableToolbar
+          title="Grade Scales"
+          filename="grade-scales"
+          rows={data}
+          columns={[
+            { label: 'Grade', value: (g) => g.name },
+            { label: 'Min %', value: (g) => g.min_percent },
+            { label: 'Max %', value: (g) => g.max_percent },
+            { label: 'GPA', value: (g) => g.grade_point },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -173,7 +193,24 @@ function ExamRulesSection() {
   const subjectsForClass = (subjectsQuery.data ?? []).filter((s) => s.class_id === form.class_id)
 
   return (
-    <SectionCard title="Exam Rules" description="Total/pass marks per exam + class + subject.">
+    <SectionCard
+      title="Exam Rules"
+      description="Total/pass marks per exam + class + subject."
+      action={
+        <TableToolbar
+          title="Exam Rules"
+          filename="exam-rules"
+          rows={data}
+          columns={[
+            { label: 'Exam', value: (r) => examById.get(r.exam_id) ?? `#${r.exam_id}` },
+            { label: 'Class', value: (r) => classById.get(r.class_id) ?? `#${r.class_id}` },
+            { label: 'Subject', value: (r) => subjectById.get(r.subject_id) ?? `#${r.subject_id}` },
+            { label: 'Total', value: (r) => r.total_marks },
+            { label: 'Pass', value: (r) => r.pass_marks },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

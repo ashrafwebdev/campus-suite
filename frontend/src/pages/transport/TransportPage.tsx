@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { Student } from '../../types/api'
 import {
   TRANSPORT_ALLOCATION_STATUS,
@@ -32,7 +32,22 @@ function VehiclesSection() {
   })
 
   return (
-    <SectionCard title="Vehicles" description="Buses, vans, etc. with seat capacity.">
+    <SectionCard
+      title="Vehicles"
+      description="Buses, vans, etc. with seat capacity."
+      action={
+        <TableToolbar
+          title="Vehicles"
+          filename="vehicles"
+          rows={data}
+          columns={[
+            { label: 'Registration', value: (v) => v.registration_no },
+            { label: 'Type', value: (v) => v.vehicle_type },
+            { label: 'Capacity', value: (v) => v.capacity },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -107,7 +122,23 @@ function RoutesSection() {
   })
 
   return (
-    <SectionCard title="Routes" description="A route's seat capacity comes from its assigned vehicle.">
+    <SectionCard
+      title="Routes"
+      description="A route's seat capacity comes from its assigned vehicle."
+      action={
+        <TableToolbar
+          title="Routes"
+          filename="routes"
+          rows={data}
+          columns={[
+            { label: 'Name', value: (r) => r.name },
+            { label: 'Fare', value: (r) => r.fare },
+            { label: 'Occupied', value: (r) => r.occupied },
+            { label: 'Capacity', value: (r) => r.capacity ?? '' },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -208,7 +239,22 @@ function AllocationsSection() {
   const routeById = new Map((routesQuery.data ?? []).map((r) => [r.id, r.name]))
 
   return (
-    <SectionCard title="Allocations" description="Assign a student to a route; requires a route with a vehicle assigned.">
+    <SectionCard
+      title="Allocations"
+      description="Assign a student to a route; requires a route with a vehicle assigned."
+      action={
+        <TableToolbar
+          title="Transport Allocations"
+          filename="transport-allocations"
+          rows={data}
+          columns={[
+            { label: 'Student', value: (a) => studentById.get(a.student_id) ?? `#${a.student_id}` },
+            { label: 'Route', value: (a) => routeById.get(a.route_id) ?? `#${a.route_id}` },
+            { label: 'Status', value: (a) => TRANSPORT_ALLOCATION_STATUS[a.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { Student } from '../../types/api'
 import { BOOK_ISSUE_STATUS, type Book, type BookCreate, type BookIssue, type BookIssueCreate } from '../../types/api'
 
@@ -24,7 +24,23 @@ function BooksSection() {
   })
 
   return (
-    <SectionCard title="Books" description="Available copies is always computed live from outstanding issues.">
+    <SectionCard
+      title="Books"
+      description="Available copies is always computed live from outstanding issues."
+      action={
+        <TableToolbar
+          title="Books"
+          filename="books"
+          rows={data}
+          columns={[
+            { label: 'Title', value: (b) => b.title },
+            { label: 'Author', value: (b) => b.author ?? '' },
+            { label: 'Available', value: (b) => b.available_copies },
+            { label: 'Total', value: (b) => b.total_copies },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -118,7 +134,24 @@ function IssuesSection() {
   const statusColor = { 1: 'blue', 2: 'emerald', 3: 'red' } as const
 
   return (
-    <SectionCard title="Issues" description="Issuing checks availability; returning after the due date charges a fine automatically.">
+    <SectionCard
+      title="Issues"
+      description="Issuing checks availability; returning after the due date charges a fine automatically."
+      action={
+        <TableToolbar
+          title="Book Issues"
+          filename="book-issues"
+          rows={data}
+          columns={[
+            { label: 'Book', value: (issue) => bookById.get(issue.book_id) ?? `#${issue.book_id}` },
+            { label: 'Student', value: (issue) => studentById.get(issue.student_id) ?? `#${issue.student_id}` },
+            { label: 'Due date', value: (issue) => issue.due_date },
+            { label: 'Status', value: (issue) => BOOK_ISSUE_STATUS[issue.status] },
+            { label: 'Fine', value: (issue) => issue.fine_amount },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

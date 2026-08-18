@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { Student } from '../../types/api'
 import {
   HOSTEL_ALLOCATION_STATUS,
@@ -34,7 +34,21 @@ function HostelsSection() {
   })
 
   return (
-    <SectionCard title="Hostels" description="Buildings/blocks, each with its own rooms.">
+    <SectionCard
+      title="Hostels"
+      description="Buildings/blocks, each with its own rooms."
+      action={
+        <TableToolbar
+          title="Hostels"
+          filename="hostels"
+          rows={data}
+          columns={[
+            { label: 'Name', value: (h) => h.name },
+            { label: 'Address', value: (h) => h.address ?? '' },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -93,7 +107,23 @@ function RoomsSection() {
   const hostelById = new Map((hostelsQuery.data ?? []).map((h) => [h.id, h.name]))
 
   return (
-    <SectionCard title="Rooms" description="Capacity per room; occupied count updates live as students are allocated.">
+    <SectionCard
+      title="Rooms"
+      description="Capacity per room; occupied count updates live as students are allocated."
+      action={
+        <TableToolbar
+          title="Rooms"
+          filename="hostel-rooms"
+          rows={data}
+          columns={[
+            { label: 'Room', value: (r) => r.room_no },
+            { label: 'Hostel', value: (r) => hostelById.get(r.hostel_id) ?? `#${r.hostel_id}` },
+            { label: 'Occupied', value: (r) => r.occupied },
+            { label: 'Capacity', value: (r) => r.capacity },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -193,7 +223,23 @@ function AllocationsSection() {
   const roomById = new Map((roomsQuery.data ?? []).map((r) => [r.id, r.room_no]))
 
   return (
-    <SectionCard title="Allocations" description="Assign a student to a room; one active allocation per student.">
+    <SectionCard
+      title="Allocations"
+      description="Assign a student to a room; one active allocation per student."
+      action={
+        <TableToolbar
+          title="Hostel Allocations"
+          filename="hostel-allocations"
+          rows={data}
+          columns={[
+            { label: 'Student', value: (a) => studentById.get(a.student_id) ?? `#${a.student_id}` },
+            { label: 'Room', value: (a) => roomById.get(a.room_id) ?? `#${a.room_id}` },
+            { label: 'Bed', value: (a) => a.bed_no ?? '' },
+            { label: 'Status', value: (a) => HOSTEL_ALLOCATION_STATUS[a.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()

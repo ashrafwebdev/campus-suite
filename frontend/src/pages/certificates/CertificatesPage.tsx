@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { Student } from '../../types/api'
 import {
   CERTIFICATE_STATUS,
@@ -30,7 +30,21 @@ function CertificateTypesSection() {
   })
 
   return (
-    <SectionCard title="Certificate Types" description="e.g. Transfer Certificate, Bonafide, Provisional Degree.">
+    <SectionCard
+      title="Certificate Types"
+      description="e.g. Transfer Certificate, Bonafide, Provisional Degree."
+      action={
+        <TableToolbar
+          title="Certificate Types"
+          filename="certificate-types"
+          rows={data}
+          columns={[
+            { label: 'Name', value: (t) => t.name },
+            { label: 'Requires graduation', value: (t) => (t.requires_graduation ? 'Yes' : 'No') },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
@@ -119,7 +133,24 @@ function CertificatesSection() {
   const studentById = new Map((studentsQuery.data ?? []).map((s) => [s.id, s.name]))
 
   return (
-    <SectionCard title="Certificates" description="Issue a certificate to a student; revoking keeps the record with a reason.">
+    <SectionCard
+      title="Certificates"
+      description="Issue a certificate to a student; revoking keeps the record with a reason."
+      action={
+        <TableToolbar
+          title="Certificates"
+          filename="certificates"
+          rows={data}
+          columns={[
+            { label: 'Certificate No.', value: (c) => c.certificate_no },
+            { label: 'Type', value: (c) => typeById.get(c.certificate_type_id) ?? `#${c.certificate_type_id}` },
+            { label: 'Student', value: (c) => studentById.get(c.student_id) ?? `#${c.student_id}` },
+            { label: 'Issue date', value: (c) => c.issue_date },
+            { label: 'Status', value: (c) => CERTIFICATE_STATUS[c.status] },
+          ]}
+        />
+      }
+    >
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault()
