@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: school-management-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "480"
+      - key: RUN_SEED_ON_START
+        value: "true"
+      - key: FIRST_ADMIN_EMAIL
+        value: admin@example.com
+      # Set these in the Render dashboard (marked sync: false so Render
+      # prompts for them instead of committing secrets to this file):
+      - key: DATABASE_URL
+        sync: false
+      - key: FIRST_ADMIN_PASSWORD
+        sync: false

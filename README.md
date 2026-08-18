@@ -104,9 +104,37 @@ Default admin login (from `.env.example`, change before deploying):
 
 ## Deployment
 
-The repo ships a `Dockerfile` and a `docker-compose.yml` (API + Postgres) —
-this is the fastest path to a real deployment, on any host that runs Docker
-(a VPS, Render, Railway, Fly.io, ECS, etc.).
+### Free path: Render + Neon (no credit card)
+
+1. **Database** — create a free Postgres project at [neon.tech](https://neon.tech)
+   (sign up with email or GitHub, no card required). Copy the connection
+   string it gives you (starts `postgresql://...`, already includes
+   `?sslmode=require`) — you'll paste it into Render in step 3.
+2. **Push this repo to GitHub** if it isn't already (Render deploys from a
+   GitHub repo).
+3. On [render.com](https://render.com) (same: email/GitHub signup, no card
+   for the free plan), choose **New → Blueprint**, point it at this repo.
+   Render reads `render.yaml` at the repo root and provisions the web
+   service automatically — it builds `Dockerfile` and sets `SECRET_KEY` for
+   you (`generateValue: true`). When prompted for the two `sync: false`
+   vars:
+   - `DATABASE_URL` → the Neon connection string from step 1
+   - `FIRST_ADMIN_PASSWORD` → a real password, not the `.env.example` one
+4. Deploy. Render builds the image, the container runs `alembic upgrade
+   head` then seeds the admin user on first boot
+   (`RUN_SEED_ON_START=true`), and the service comes up at the `.onrender.com`
+   URL Render assigns — `/docs` for the interactive API.
+
+**The tradeoff**: Render's free web service spins down after 15 minutes of
+no traffic, so the first request after a quiet spell takes ~30-50s to wake
+back up. Fine for a low-traffic school app; not fine if you need it always
+warm — that needs a paid plan or a host you keep running yourself (see
+below).
+
+### Self-hosted (Docker, any VPS)
+
+If you have or later get a machine to run Docker on, `docker-compose.yml`
+runs the API and Postgres together — no Render/Neon accounts needed.
 
 ```bash
 export SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))')
@@ -141,10 +169,11 @@ run `alembic upgrade head`, then serve with Gunicorn directly:
 gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 ```
 
-I don't have a hosting account or cloud credentials in this environment, so
-I can't provision the actual live infrastructure (a Render/Fly/AWS account,
-a VPS, DNS) — this Docker setup is the handoff point for whichever host you
-point it at.
+I don't have a Render/Neon account or any cloud credentials in this
+environment, so I can't click through the actual signup/deploy flow for
+you — `render.yaml` and the Docker setup are the handoff point: they do
+the configuration work, you do the (free, no-card) account creation and
+button-clicking on Render's and Neon's sites.
 
 ## Running tests
 
