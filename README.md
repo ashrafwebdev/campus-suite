@@ -102,6 +102,50 @@ Open `http://127.0.0.1:8000/docs` for interactive API docs.
 Default admin login (from `.env.example`, change before deploying):
 `admin@example.com` / `changeme123`
 
+## Deployment
+
+The repo ships a `Dockerfile` and a `docker-compose.yml` (API + Postgres) —
+this is the fastest path to a real deployment, on any host that runs Docker
+(a VPS, Render, Railway, Fly.io, ECS, etc.).
+
+```bash
+export SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))')
+export FIRST_ADMIN_PASSWORD='pick-a-real-password'
+# optionally: POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, FIRST_ADMIN_EMAIL, APP_PORT
+
+docker compose up -d --build
+```
+
+This builds the API image, starts Postgres, waits for it to be healthy, runs
+`alembic upgrade head` automatically on container start (via
+`docker-entrypoint.sh`), seeds baseline permissions/role/admin user on first
+boot (`RUN_SEED_ON_START=true` in `docker-compose.yml`), then serves the app
+with Gunicorn + Uvicorn workers on `:8000` (`APP_PORT` to change the host
+port). The API container runs as a non-root user.
+
+**Required in production:**
+- `SECRET_KEY` — a real random secret; the compose file refuses to start
+  without one (no insecure default committed).
+- `FIRST_ADMIN_PASSWORD` — same; change it (or disable/rotate the account)
+  after first login.
+- `DATABASE_URL` should point at Postgres in any real deployment — SQLite
+  (the default in `.env.example`) is fine for local dev but not for
+  concurrent production traffic.
+- Put a TLS-terminating reverse proxy (Caddy, nginx, or your host's built-in
+  one) in front of the container; the app itself serves plain HTTP.
+
+Without Docker: install `requirements.txt`, set `DATABASE_URL` to Postgres,
+run `alembic upgrade head`, then serve with Gunicorn directly:
+
+```bash
+gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+```
+
+I don't have a hosting account or cloud credentials in this environment, so
+I can't provision the actual live infrastructure (a Render/Fly/AWS account,
+a VPS, DNS) — this Docker setup is the handoff point for whichever host you
+point it at.
+
 ## Running tests
 
 ```bash
