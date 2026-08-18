@@ -68,6 +68,17 @@ PERMISSIONS = [
     ("library.issue_store", "Book Issue", "Library"),
     ("library.issue_return", "Book Return", "Library"),
     ("library.issue_lost", "Book Mark Lost", "Library"),
+    ("transport.vehicle", "Vehicle View", "Transport"),
+    ("transport.vehicle_store", "Vehicle Create", "Transport"),
+    ("transport.vehicle_update", "Vehicle Edit", "Transport"),
+    ("transport.vehicle_destroy", "Vehicle Delete", "Transport"),
+    ("transport.route", "Route View", "Transport"),
+    ("transport.route_store", "Route Create", "Transport"),
+    ("transport.route_update", "Route Edit", "Transport"),
+    ("transport.route_destroy", "Route Delete", "Transport"),
+    ("transport.allocation", "Transport Allocation View", "Transport"),
+    ("transport.allocation_store", "Transport Allocation Create", "Transport"),
+    ("transport.allocation_end", "Transport Allocation End", "Transport"),
 ]
 
 

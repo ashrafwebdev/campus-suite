@@ -40,8 +40,14 @@ was Laravel/PHP).
   permanently, unlike a return), never a stored counter. Issuing checks
   availability and blocks a student from double-borrowing the same book;
   returning after the due date charges a per-day fine automatically.
+- **Transport**: vehicles (with seat capacity), routes (fare + an assigned
+  vehicle), ordered route stops, and student allocations. A route's
+  effective capacity comes from its assigned vehicle, so allocating
+  enforces one active allocation per student, seat capacity per route, a
+  vehicle actually assigned to the route, and that a chosen stop belongs to
+  the route being booked. Ending an allocation frees the seat.
 
-More modules (transport, exams & results,
+More modules (exams & results,
 certificates/course-completion, HR/payroll) are planned to follow the same
 pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
 `app/api/v1/router.py`.
