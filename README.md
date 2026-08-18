@@ -1,4 +1,4 @@
-# School Management System
+# Campus Suite
 
 A modular school/college/university management backend, built with **FastAPI** +
 **SQLAlchemy** + **Alembic**. Rebuilt from scratch in Python (previous version
