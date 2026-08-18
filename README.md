@@ -5,6 +5,15 @@ institutional pipeline — admissions, academics, exams, fees, hostel,
 transport, library, certificates, and HR/payroll — built with **FastAPI** +
 **SQLAlchemy** + **Alembic**.
 
+## Live
+
+- Frontend: https://campus-suite.netlify.app/
+- Backend API: https://campus-suite-api.onrender.com/ (`/docs` for the
+  interactive API reference)
+
+No public login is published here — this is a live deployment with real
+data behind it. Contact the maintainer for access.
+
 ## Stack
 
 - FastAPI (REST API, OpenAPI docs at `/docs`)
