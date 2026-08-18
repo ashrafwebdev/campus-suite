@@ -86,7 +86,7 @@ function GradeScalesSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-5 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5"
       >
         <Field label="Grade" required>
           <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" placeholder="A+" />
@@ -180,7 +180,7 @@ function ExamRulesSection() {
           if (!form.exam_id || !form.class_id || !form.subject_id) return
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-6 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-6"
       >
         <Field label="Exam" required>
           <select
@@ -311,7 +311,7 @@ function MarksAndResultsSection() {
           if (!markForm.exam_id || !markForm.student_id || !markForm.subject_id) return
           markMutation.mutate(markForm)
         }}
-        className="mb-4 grid grid-cols-6 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-6"
       >
         <Field label="Exam" required>
           <select

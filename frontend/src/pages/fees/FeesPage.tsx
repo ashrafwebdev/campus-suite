@@ -116,7 +116,7 @@ function InvoicesSection() {
           if (!form.student_id || !form.fee_head_id) return
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-5 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5"
       >
         <Field label="Student" required>
           <select

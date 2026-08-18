@@ -100,7 +100,7 @@ function RoomsSection() {
           if (!form.hostel_id) return
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Hostel" required>
           <select
@@ -200,7 +200,7 @@ function AllocationsSection() {
           if (!form.student_id || !form.room_id) return
           allocateMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Student" required>
           <select

@@ -40,7 +40,7 @@ function EmployeesSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Name" required>
           <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" />
@@ -135,7 +135,7 @@ function LeaveRequestsSection() {
           if (!form.employee_id) return
           requestMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-5 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5"
       >
         <Field label="Employee" required>
           <select
@@ -263,7 +263,7 @@ function PayrollSection() {
           if (!form.employee_id) return
           generateMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-5 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5"
       >
         <Field label="Employee" required>
           <select

@@ -36,7 +36,7 @@ function CertificateTypesSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <div className="col-span-2">
           <Field label="Name" required>
@@ -126,7 +126,7 @@ function CertificatesSection() {
           if (!form.certificate_type_id || !form.student_id) return
           issueMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-3 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"
       >
         <Field label="Type" required>
           <select

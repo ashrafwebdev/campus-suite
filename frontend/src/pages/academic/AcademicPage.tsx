@@ -84,7 +84,7 @@ function SubjectsSection() {
 
   return (
     <SectionCard title="Subjects" description="Belong to a class; used by exam rules.">
-      <form onSubmit={handleSubmit} className="mb-4 grid grid-cols-4 gap-2">
+      <form onSubmit={handleSubmit} className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Name" required>
           <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" />
         </Field>

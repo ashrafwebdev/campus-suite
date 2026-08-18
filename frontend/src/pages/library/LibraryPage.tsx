@@ -30,7 +30,7 @@ function BooksSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Title" required>
           <input required value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} className="input" />
@@ -125,7 +125,7 @@ function IssuesSection() {
           if (!form.book_id || !form.student_id) return
           issueMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Book" required>
           <select

@@ -56,7 +56,7 @@ export function StudentFormPage() {
           <input required value={form.name} onChange={(e) => update('name', e.target.value)} className="input" />
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Phone">
             <input value={form.phone_no ?? ''} onChange={(e) => update('phone_no', e.target.value)} className="input" />
           </Field>
@@ -70,7 +70,7 @@ export function StudentFormPage() {
           </Field>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Guardian name">
             <input
               value={form.guardian_name ?? ''}
@@ -111,7 +111,7 @@ export function StudentFormPage() {
           </select>
         </Field>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="Residency">
             <select
               value={form.residency_type}

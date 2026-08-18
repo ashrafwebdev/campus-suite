@@ -38,7 +38,7 @@ function VehiclesSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Registration no." required>
           <input
@@ -113,7 +113,7 @@ function RoutesSection() {
           e.preventDefault()
           createMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-4 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
       >
         <Field label="Name" required>
           <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="input" />
@@ -215,7 +215,7 @@ function AllocationsSection() {
           if (!form.student_id || !form.route_id) return
           allocateMutation.mutate(form)
         }}
-        className="mb-4 grid grid-cols-3 gap-2"
+        className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"
       >
         <Field label="Student" required>
           <select
