@@ -3,6 +3,7 @@ from app.models.role import Role, Permission, role_permissions
 from app.models.academic import SchoolClass, Section, Subject
 from app.models.student import Student
 from app.models.admission import AdmissionEnquiry
+from app.models.hostel import Hostel, HostelRoom, HostelAllocation
 
 __all__ = [
     "User",
@@ -14,4 +15,7 @@ __all__ = [
     "Subject",
     "Student",
     "AdmissionEnquiry",
+    "Hostel",
+    "HostelRoom",
+    "HostelAllocation",
 ]

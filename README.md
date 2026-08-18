@@ -23,11 +23,15 @@ was Laravel/PHP).
   referral / walk-in / social media, tracked New → Contacted → Follow Up →
   Admitted/Rejected, with a `convert` action that creates the enrolled
   `Student` record from the enquiry's details
+- **Hostel management**: hostels, rooms (with capacity), and allocations.
+  Allocating a student enforces one active allocation per student and
+  capacity per room, and flips the student's `residency_type` to hosteller
+  (setting `hostel_room_no`); vacating reverts both.
 
-More modules (hostel management, fees/finance, library, transport, exams &
-results, certificates/course-completion, HR/payroll) are planned to follow
-the same pattern: SQLAlchemy model → Pydantic schemas → CRUD → router,
-registered in `app/api/v1/router.py`.
+More modules (fees/finance, library, transport, exams & results,
+certificates/course-completion, HR/payroll) are planned to follow the same
+pattern: SQLAlchemy model → Pydantic schemas → CRUD → router, registered in
+`app/api/v1/router.py`.
 
 ## Getting started
 

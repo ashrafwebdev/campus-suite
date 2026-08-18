@@ -40,6 +40,17 @@ PERMISSIONS = [
     ("admission.enquiry_update", "Admission Enquiry Edit", "Admission"),
     ("admission.enquiry_destroy", "Admission Enquiry Delete", "Admission"),
     ("admission.enquiry_convert", "Admission Enquiry Convert To Student", "Admission"),
+    ("hostel.index", "Hostel View", "Hostel"),
+    ("hostel.store", "Hostel Create", "Hostel"),
+    ("hostel.update", "Hostel Edit", "Hostel"),
+    ("hostel.destroy", "Hostel Delete", "Hostel"),
+    ("hostel.room", "Hostel Room View", "Hostel"),
+    ("hostel.room_store", "Hostel Room Create", "Hostel"),
+    ("hostel.room_update", "Hostel Room Edit", "Hostel"),
+    ("hostel.room_destroy", "Hostel Room Delete", "Hostel"),
+    ("hostel.allocation", "Hostel Allocation View", "Hostel"),
+    ("hostel.allocation_store", "Hostel Allocation Create", "Hostel"),
+    ("hostel.allocation_vacate", "Hostel Allocation Vacate", "Hostel"),
 ]
 
 
