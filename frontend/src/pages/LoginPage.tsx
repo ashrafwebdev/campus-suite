@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 export function LoginPage() {
@@ -36,6 +36,11 @@ export function LoginPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Campus Suite</h1>
           <p className="mt-1 text-sm text-slate-500">Sign in to your institution's dashboard</p>
         </div>
+        <p className="mb-4 text-center text-sm text-slate-500">
+          <Link to="/about" className="font-medium text-indigo-600 hover:underline">
+            ← Back to campus site
+          </Link>
+        </p>
         <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4">
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">

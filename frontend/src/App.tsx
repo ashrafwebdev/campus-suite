@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthContext'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AppLayout } from './layout/AppLayout'
 import { LoginPage } from './pages/LoginPage'
+import { PublicCampusPage } from './pages/public/PublicCampusPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { AdmissionsListPage } from './pages/admissions/AdmissionsListPage'
 import { AdmissionFormPage } from './pages/admissions/AdmissionFormPage'
@@ -21,6 +22,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/about" element={<PublicCampusPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           element={
