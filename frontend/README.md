@@ -1,6 +1,6 @@
-# Campus Suite — Frontend
+# SMA Campus Suite — Frontend
 
-A React + TypeScript + Vite single-page app for the Campus Suite API
+A React + TypeScript + Vite single-page app for the SMA Campus Suite API
 (`../` — FastAPI backend). Tailwind CSS v4 for styling, React Router for
 routing, TanStack Query for server state.
 

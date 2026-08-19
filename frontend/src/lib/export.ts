@@ -58,7 +58,7 @@ export function printTable<T>(title: string, columns: ExportColumn<T>[], rows: T
 </head>
 <body>
 <h1>${escapeHtml(title)}</h1>
-<p>Campus Suite &middot; generated ${escapeHtml(new Date().toLocaleString())}</p>
+<p>SMA Campus Suite &middot; generated ${escapeHtml(new Date().toLocaleString())}</p>
 <table><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>
 </body>
 </html>`)

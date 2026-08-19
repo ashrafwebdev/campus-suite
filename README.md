@@ -1,4 +1,4 @@
-# Campus Suite
+# SMA Campus Suite
 
 A modular school/college/university management backend covering the full
 institutional pipeline — admissions, academics, exams, fees, hostel,
