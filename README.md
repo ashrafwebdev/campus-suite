@@ -11,8 +11,9 @@ transport, library, certificates, and HR/payroll — built with **FastAPI** +
 - Backend API: https://campus-suite-api.onrender.com/ (`/docs` for the
   interactive API reference)
 
-No public login is published here — this is a live deployment with real
-data behind it. Contact the maintainer for access.
+The public campus page (`/about`) needs no login. The staff dashboard
+does — no public login is published here, since this is a live deployment
+with real data behind it. Contact the maintainer for access.
 
 ## Stack
 
@@ -82,6 +83,16 @@ data behind it. Contact the maintainer for access.
   - deductions`, blocks a negative net salary, and only pays employees who
   are still Active; marking paid is a one-way transition (can't un-pay or
   double-pay).
+- **Daily attendance**: roster-based attendance per class per day
+  (Present/Absent/Late/Excused, with an optional note), upserted per
+  student+date so re-marking a day updates the existing record instead of
+  duplicating it, with history filterable by class, student, and date
+  range.
+- **Public site content**: a single admin-editable record (institution
+  name, hero copy, stats, departments, facilities, faculty strength,
+  achievements, career guidance & placement stats, contact info) that
+  powers the public `/about` page on the frontend — `GET` is public
+  (no login), `PUT` is admin-only.
 
 This covers the full pipeline the project set out to build: **advertisement
 → admission enquiry → enrolled student → academics/exams → fees → hostel/
@@ -114,13 +125,23 @@ Default admin login (from `.env.example`, change before deploying):
 
 ## Frontend
 
-`frontend/` is a React + TypeScript + Vite app that talks to this API —
-login, dashboard, Admissions (create enquiry → convert to student), and
-Students (including day scholar / hosteller with hostel room number) are
-working today; the rest of the modules above have working APIs but no UI
-yet. See `frontend/README.md` to run it. It needs this backend running
-with its origin allowed in `CORS_ORIGINS` (`http://localhost:5173` is
-already the default for local dev).
+`frontend/` is a React + TypeScript + Vite app that talks to this API, with
+a working UI for every module above: Admissions, Students, Academic
+structure, Attendance, Hostel, Fees & Finance, Library, Transport, Exams &
+Results, Certificates, and HR & Payroll — each with list/create/action
+flows, and a Print button plus CSV/Excel export on every list. It also
+includes:
+
+- An unauthenticated public campus page at `/about` (departments,
+  facilities, faculty, achievements, career guidance, contact), editable
+  by an admin from **Public Site Content** in the sidebar — no code change
+  needed to update it.
+- Mobile-responsive layout (collapsible sidebar, stacking forms) down to
+  phone-sized viewports.
+
+See `frontend/README.md` to run it. It needs this backend running with its
+origin allowed in `CORS_ORIGINS` (`http://localhost:5173` is already the
+default for local dev).
 
 ## Deployment
 
