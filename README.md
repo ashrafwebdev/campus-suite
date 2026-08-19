@@ -7,7 +7,7 @@ transport, library, certificates, and HR/payroll — built with **FastAPI** +
 
 ## Live
 
-- Frontend: https://campus-suite.netlify.app/
+- Frontend: https://sma-campus-suite.netlify.app/
 - Backend API: https://campus-suite-api.onrender.com/ (`/docs` for the
   interactive API reference)
 
