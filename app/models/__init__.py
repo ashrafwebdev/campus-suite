@@ -10,6 +10,7 @@ from app.models.transport import Vehicle, Route, RouteStop, TransportAllocation
 from app.models.exam import Exam, GradeScale, ExamRule, Mark, Result
 from app.models.certificate import CertificateType, Certificate
 from app.models.hr import Employee, LeaveRequest, Payroll
+from app.models.site_content import SiteContent
 
 __all__ = [
     "User",
@@ -43,4 +44,5 @@ __all__ = [
     "Employee",
     "LeaveRequest",
     "Payroll",
+    "SiteContent",
 ]

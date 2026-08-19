@@ -142,6 +142,65 @@ export function TableToolbar<T>({
   )
 }
 
+export function ListEditor<T extends Record<string, string | number>>({
+  items,
+  onChange,
+  fields,
+  newItem,
+  addLabel = '+ Add row',
+}: {
+  items: T[]
+  onChange: (items: T[]) => void
+  fields: { key: keyof T; label: string; type?: 'text' | 'number' | 'textarea' }[]
+  newItem: T
+  addLabel?: string
+}) {
+  function updateField(index: number, key: keyof T, value: string) {
+    const next = [...items]
+    const field = fields.find((f) => f.key === key)
+    next[index] = { ...next[index], [key]: field?.type === 'number' ? Number(value) : value }
+    onChange(next)
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="rounded-md border border-slate-200 p-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {fields.map((f) => (
+              <Field key={String(f.key)} label={f.label}>
+                {f.type === 'textarea' ? (
+                  <textarea
+                    value={item[f.key] as string}
+                    onChange={(e) => updateField(i, f.key, e.target.value)}
+                    className="input"
+                    rows={2}
+                  />
+                ) : (
+                  <input
+                    type={f.type === 'number' ? 'number' : 'text'}
+                    value={item[f.key] as string | number}
+                    onChange={(e) => updateField(i, f.key, e.target.value)}
+                    className="input"
+                  />
+                )}
+              </Field>
+            ))}
+          </div>
+          <div className="mt-2 flex justify-end">
+            <SecondaryButton type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))}>
+              Remove
+            </SecondaryButton>
+          </div>
+        </div>
+      ))}
+      <SecondaryButton type="button" onClick={() => onChange([...items, newItem])}>
+        {addLabel}
+      </SecondaryButton>
+    </div>
+  )
+}
+
 export function PrimaryButton({
   children,
   ...props

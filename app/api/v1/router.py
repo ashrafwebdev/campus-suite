@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import academic, admissions, auth, certificates, exams, fees, hostel, hr, library, roles, students, transport, users
+from app.api.v1.endpoints import academic, admissions, auth, certificates, exams, fees, hostel, hr, library, roles, site_content, students, transport, users
 
 api_router = APIRouter()
 
@@ -17,3 +17,4 @@ api_router.include_router(transport.router, prefix="/transport", tags=["transpor
 api_router.include_router(exams.router, prefix="/exams", tags=["exams"])
 api_router.include_router(certificates.router, prefix="/certificates", tags=["certificates"])
 api_router.include_router(hr.router, prefix="/hr", tags=["hr"])
+api_router.include_router(site_content.router, prefix="/site-content", tags=["site-content"])

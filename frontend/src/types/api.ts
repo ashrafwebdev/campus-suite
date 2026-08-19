@@ -557,3 +557,53 @@ export interface PayrollGenerate {
   allowances?: string
   deductions?: string
 }
+
+export interface DepartmentItem {
+  name: string
+  blurb: string
+}
+
+export interface FacilityItem {
+  name: string
+  blurb: string
+}
+
+export interface FacultyStrengthItem {
+  department: string
+  count: number
+}
+
+export interface AchievementItem {
+  year: string
+  title: string
+  detail: string
+}
+
+export interface CareerServiceItem {
+  title: string
+  blurb: string
+}
+
+export interface SiteContent {
+  institution_name: string
+  hero_eyebrow: string
+  hero_title: string
+  hero_description: string
+  established_year: string
+  students_count: string
+  faculty_count: string
+  programs_count: string
+  about_description: string
+  departments: DepartmentItem[]
+  facilities: FacilityItem[]
+  faculty_strength: FacultyStrengthItem[]
+  achievements: AchievementItem[]
+  placement_rate: string
+  recruiting_partners: string
+  avg_package: string
+  highest_package: string
+  career_services: CareerServiceItem[]
+  contact_phone: string
+  contact_email: string
+  contact_address: string
+}

@@ -17,6 +17,7 @@ import { TransportPage } from './pages/transport/TransportPage'
 import { ExamsPage } from './pages/exams/ExamsPage'
 import { CertificatesPage } from './pages/certificates/CertificatesPage'
 import { HRPage } from './pages/hr/HRPage'
+import { SiteContentPage } from './pages/settings/SiteContentPage'
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/exams" element={<ExamsPage />} />
           <Route path="/certificates" element={<CertificatesPage />} />
           <Route path="/hr" element={<HRPage />} />
+          <Route path="/settings/site-content" element={<SiteContentPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
