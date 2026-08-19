@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { APP_NAME } from '../lib/config'
 
 interface NavItem {
   to: string
@@ -31,7 +32,7 @@ export function AppLayout() {
   const sidebar = (
     <>
       <div className="flex h-16 items-center justify-between border-b border-slate-200 px-5">
-        <span className="min-w-0 truncate text-lg font-semibold tracking-tight">SMA Campus Suite</span>
+        <span className="min-w-0 truncate text-lg font-semibold tracking-tight">{APP_NAME}</span>
         <button
           onClick={() => setNavOpen(false)}
           aria-label="Close menu"
@@ -111,7 +112,7 @@ export function AppLayout() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="min-w-0 truncate text-base font-semibold tracking-tight">SMA Campus Suite</span>
+          <span className="min-w-0 truncate text-base font-semibold tracking-tight">{APP_NAME}</span>
         </header>
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">

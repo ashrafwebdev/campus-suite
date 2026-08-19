@@ -1,3 +1,5 @@
+import { APP_NAME } from './config'
+
 export interface ExportColumn<T> {
   label: string
   value: (row: T) => string | number | null | undefined
@@ -58,7 +60,7 @@ export function printTable<T>(title: string, columns: ExportColumn<T>[], rows: T
 </head>
 <body>
 <h1>${escapeHtml(title)}</h1>
-<p>SMA Campus Suite &middot; generated ${escapeHtml(new Date().toLocaleString())}</p>
+<p>${escapeHtml(APP_NAME)} &middot; generated ${escapeHtml(new Date().toLocaleString())}</p>
 <table><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table>
 </body>
 </html>`)

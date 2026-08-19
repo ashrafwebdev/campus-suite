@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { APP_NAME } from '../lib/config'
 
 export function LoginPage() {
   const { user, login, loading } = useAuth()
@@ -33,7 +34,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">SMA Campus Suite</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{APP_NAME}</h1>
           <p className="mt-1 text-sm text-slate-500">Sign in to your institution's dashboard</p>
         </div>
         <p className="mb-4 text-center text-sm text-slate-500">

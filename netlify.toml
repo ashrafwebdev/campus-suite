@@ -7,6 +7,9 @@
   # Not a secret -- it's baked into the client bundle either way. Change
   # this if the backend URL ever changes.
   VITE_API_URL = "https://campus-suite-api.onrender.com"
+  # Product display name shown throughout the UI. Change this one value
+  # (here and in the Render env var below) to rebrand -- no code edits.
+  VITE_APP_NAME = "SMA Campus Suite"
 
 # React Router client-side routes (e.g. /admissions) aren't real files on
 # the static host -- send every path to index.html and let the SPA route it.

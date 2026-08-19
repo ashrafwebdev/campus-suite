@@ -17,6 +17,11 @@ services:
         value: "true"
       - key: FIRST_ADMIN_EMAIL
         value: admin@example.com
+      # Product display name (API docs title). Change this and the
+      # VITE_APP_NAME build env vars in netlify.toml / vercel.json to
+      # rebrand -- no code edits needed.
+      - key: APP_NAME
+        value: SMA Campus Suite
       # Update this once the frontend is deployed, to its real URL(s)
       # (comma-separated). Left at localhost so local frontend dev against
       # this deployed API works out of the box.

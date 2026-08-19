@@ -4,7 +4,8 @@
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "build": {
     "env": {
-      "VITE_API_URL": "https://campus-suite-api.onrender.com"
+      "VITE_API_URL": "https://campus-suite-api.onrender.com",
+      "VITE_APP_NAME": "SMA Campus Suite"
     }
   }
 }
