@@ -10,6 +10,7 @@ import { AdmissionFormPage } from './pages/admissions/AdmissionFormPage'
 import { StudentsListPage } from './pages/students/StudentsListPage'
 import { StudentFormPage } from './pages/students/StudentFormPage'
 import { AcademicPage } from './pages/academic/AcademicPage'
+import { AttendancePage } from './pages/attendance/AttendancePage'
 import { HostelPage } from './pages/hostel/HostelPage'
 import { FeesPage } from './pages/fees/FeesPage'
 import { LibraryPage } from './pages/library/LibraryPage'
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/students" element={<StudentsListPage />} />
           <Route path="/students/new" element={<StudentFormPage />} />
           <Route path="/academic" element={<AcademicPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/hostel" element={<HostelPage />} />
           <Route path="/fees" element={<FeesPage />} />
           <Route path="/library" element={<LibraryPage />} />

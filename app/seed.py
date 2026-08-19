@@ -114,6 +114,8 @@ PERMISSIONS = [
     ("hr.payroll_generate", "Payroll Generate", "HR"),
     ("hr.payroll_pay", "Payroll Mark Paid", "HR"),
     ("site_content.update", "Public Site Content Edit", "Site Content"),
+    ("attendance.index", "Attendance View", "Attendance"),
+    ("attendance.mark", "Attendance Mark", "Attendance"),
 ]
 
 

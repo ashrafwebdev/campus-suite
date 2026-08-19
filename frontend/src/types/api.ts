@@ -584,6 +584,43 @@ export interface CareerServiceItem {
   blurb: string
 }
 
+export const ATTENDANCE_STATUS: Record<number, string> = {
+  1: 'Present',
+  2: 'Absent',
+  3: 'Late',
+  4: 'Excused',
+}
+
+export interface RosterEntry {
+  student_id: number
+  student_name: string
+  admission_no: string
+  status: number | null
+  note: string | null
+}
+
+export interface AttendanceEntry {
+  student_id: number
+  status: number
+  note?: string | null
+}
+
+export interface AttendanceBulkMark {
+  class_id: number
+  date: string
+  entries: AttendanceEntry[]
+}
+
+export interface Attendance {
+  id: number
+  student_id: number
+  class_id: number
+  date: string
+  status: number
+  note: string | null
+  marked_by_id: number | null
+}
+
 export interface SiteContent {
   institution_name: string
   hero_eyebrow: string

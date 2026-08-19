@@ -13,6 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/admissions', label: 'Admissions', enabled: true },
   { to: '/students', label: 'Students', enabled: true },
   { to: '/academic', label: 'Academic', enabled: true },
+  { to: '/attendance', label: 'Attendance', enabled: true },
   { to: '/hostel', label: 'Hostel', enabled: true },
   { to: '/fees', label: 'Fees & Finance', enabled: true },
   { to: '/library', label: 'Library', enabled: true },

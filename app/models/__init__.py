@@ -11,6 +11,7 @@ from app.models.exam import Exam, GradeScale, ExamRule, Mark, Result
 from app.models.certificate import CertificateType, Certificate
 from app.models.hr import Employee, LeaveRequest, Payroll
 from app.models.site_content import SiteContent
+from app.models.attendance import Attendance
 
 __all__ = [
     "User",
@@ -45,4 +46,5 @@ __all__ = [
     "LeaveRequest",
     "Payroll",
     "SiteContent",
+    "Attendance",
 ]
