@@ -116,6 +116,7 @@ PERMISSIONS = [
     ("site_content.update", "Public Site Content Edit", "Site Content"),
     ("attendance.index", "Attendance View", "Attendance"),
     ("attendance.mark", "Attendance Mark", "Attendance"),
+    ("demo_data.manage", "Install/Remove Sample Data", "Demo Data"),
 ]
 
 

@@ -12,6 +12,7 @@ from app.models.certificate import CertificateType, Certificate
 from app.models.hr import Employee, LeaveRequest, Payroll
 from app.models.site_content import SiteContent
 from app.models.attendance import Attendance
+from app.models.demo_data import DemoDataRecord
 
 __all__ = [
     "User",
@@ -47,4 +48,5 @@ __all__ = [
     "Payroll",
     "SiteContent",
     "Attendance",
+    "DemoDataRecord",
 ]

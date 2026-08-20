@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/certificates', label: 'Certificates', enabled: true },
   { to: '/hr', label: 'HR & Payroll', enabled: true },
   { to: '/settings/site-content', label: 'Public Site Content', enabled: true },
+  { to: '/settings/demo-data', label: 'Sample Data', enabled: true },
 ]
 
 export function AppLayout() {
