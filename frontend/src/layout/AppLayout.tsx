@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { APP_NAME } from '../lib/config'
 
@@ -76,6 +76,9 @@ export function AppLayout() {
         )}
       </nav>
       <div className="border-t border-slate-200 p-4">
+        <Link to="/training" target="_blank" rel="noreferrer" className="mb-3 block text-xs font-medium text-indigo-600 hover:underline">
+          Help &amp; Training Guide ↗
+        </Link>
         <div className="mb-2 truncate text-sm font-medium text-slate-700">{user?.name}</div>
         <div className="mb-3 truncate text-xs text-slate-400">{user?.email}</div>
         <button

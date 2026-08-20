@@ -37,9 +37,13 @@ export function LoginPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{APP_NAME}</h1>
           <p className="mt-1 text-sm text-slate-500">Sign in to your institution's dashboard</p>
         </div>
-        <p className="mb-4 text-center text-sm text-slate-500">
+        <p className="mb-4 flex items-center justify-center gap-3 text-center text-sm text-slate-500">
           <Link to="/about" className="font-medium text-indigo-600 hover:underline">
             ← Back to campus site
+          </Link>
+          <span className="text-slate-300">·</span>
+          <Link to="/training" className="font-medium text-indigo-600 hover:underline">
+            How to use this app
           </Link>
         </p>
         <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">

@@ -293,9 +293,14 @@ export function PublicCampusPage() {
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-sm text-slate-500">&copy; {new Date().getFullYear()} {content.institution_name}</p>
-          <Link to="/login" className="text-sm font-medium text-indigo-600 hover:underline">
-            Staff Login &rarr;
-          </Link>
+          <div className="flex gap-4">
+            <Link to="/training" className="text-sm font-medium text-indigo-600 hover:underline">
+              How to use this app
+            </Link>
+            <Link to="/login" className="text-sm font-medium text-indigo-600 hover:underline">
+              Staff Login &rarr;
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

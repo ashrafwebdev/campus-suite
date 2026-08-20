@@ -4,6 +4,7 @@ import { ProtectedRoute } from './auth/ProtectedRoute'
 import { AppLayout } from './layout/AppLayout'
 import { LoginPage } from './pages/LoginPage'
 import { PublicCampusPage } from './pages/public/PublicCampusPage'
+import { TrainingPage } from './pages/training/TrainingPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { AdmissionsListPage } from './pages/admissions/AdmissionsListPage'
 import { AdmissionFormPage } from './pages/admissions/AdmissionFormPage'
@@ -25,6 +26,7 @@ export default function App() {
     <AuthProvider>
       <Routes>
         <Route path="/about" element={<PublicCampusPage />} />
+        <Route path="/training" element={<TrainingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           element={
