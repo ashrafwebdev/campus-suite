@@ -13,7 +13,7 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
 
   if (!loading && user) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -22,7 +22,7 @@ export function LoginPage() {
     setSubmitting(true)
     try {
       await login(email, password)
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
@@ -38,7 +38,7 @@ export function LoginPage() {
           <p className="mt-1 text-sm text-slate-500">Sign in to your institution's dashboard</p>
         </div>
         <p className="mb-4 flex items-center justify-center gap-3 text-center text-sm text-slate-500">
-          <Link to="/about" className="font-medium text-indigo-600 hover:underline">
+          <Link to="/" className="font-medium text-indigo-600 hover:underline">
             ← Back to campus site
           </Link>
           <span className="text-slate-300">·</span>

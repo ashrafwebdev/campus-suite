@@ -94,7 +94,7 @@ export function TrainingPage() {
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
           <span className="min-w-0 truncate text-lg font-semibold tracking-tight">Training Guide</span>
           <nav className="hidden items-center gap-5 sm:flex">
-            <Link to="/about" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+            <Link to="/" className="text-sm font-medium text-slate-600 hover:text-slate-900">
               Campus Site
             </Link>
             <Link to="/login" className="rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white hover:bg-indigo-500">
@@ -113,7 +113,7 @@ export function TrainingPage() {
         </div>
         {navOpen && (
           <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:hidden">
-            <Link to="/about" onClick={() => setNavOpen(false)} className="text-sm font-medium text-slate-600">
+            <Link to="/" onClick={() => setNavOpen(false)} className="text-sm font-medium text-slate-600">
               Campus Site
             </Link>
             <Link
@@ -319,7 +319,7 @@ export function TrainingPage() {
         <GuideSection
           id="site-content"
           title="Public Site Content"
-          description="The public campus page at /about isn't hardcoded — an admin edits its hero text, departments, facilities, faculty numbers, achievements, career guidance, and contact info from this screen, and it goes live immediately."
+          description="The public campus page at / isn't hardcoded — an admin edits its hero text, departments, facilities, faculty numbers, achievements, career guidance, and contact info from this screen, and it goes live immediately."
           steps={[
             'Go to Public Site Content in the sidebar (admin only).',
             'Edit any section — add or remove rows in the repeatable lists (departments, facilities, achievements...).',
@@ -327,7 +327,7 @@ export function TrainingPage() {
           ]}
           shots={[
             { src: '/screenshots/site-content-editor.png', alt: 'Public site content editor', caption: 'The admin editor' },
-            { src: '/screenshots/public-about.png', alt: 'The resulting public campus page', caption: 'What visitors see at /about' },
+            { src: '/screenshots/public-about.png', alt: 'The resulting public campus page', caption: 'What visitors see at /' },
           ]}
         />
 
@@ -361,7 +361,7 @@ export function TrainingPage() {
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
           <p className="text-sm text-slate-500">Questions not covered here? Contact your administrator.</p>
           <div className="flex gap-4">
-            <Link to="/about" className="text-sm font-medium text-indigo-600 hover:underline">
+            <Link to="/" className="text-sm font-medium text-indigo-600 hover:underline">
               Campus Site
             </Link>
             <Link to="/login" className="text-sm font-medium text-indigo-600 hover:underline">

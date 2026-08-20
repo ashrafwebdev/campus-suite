@@ -25,7 +25,8 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/about" element={<PublicCampusPage />} />
+        <Route path="/" element={<PublicCampusPage />} />
+        <Route path="/about" element={<Navigate to="/" replace />} />
         <Route path="/training" element={<TrainingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
@@ -35,7 +36,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/admissions" element={<AdmissionsListPage />} />
           <Route path="/admissions/new" element={<AdmissionFormPage />} />
           <Route path="/students" element={<StudentsListPage />} />

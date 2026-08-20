@@ -11,7 +11,7 @@ transport, library, certificates, and HR/payroll — built with **FastAPI** +
 - Backend API: https://campus-suite-api.onrender.com/ (`/docs` for the
   interactive API reference)
 
-The public campus page (`/about`) needs no login. The staff dashboard
+The public campus page (`/`) needs no login. The staff dashboard
 does — no public login is published here, since this is a live deployment
 with real data behind it. Contact the maintainer for access.
 
@@ -91,7 +91,7 @@ with real data behind it. Contact the maintainer for access.
 - **Public site content**: a single admin-editable record (institution
   name, hero copy, stats, departments, facilities, faculty strength,
   achievements, career guidance & placement stats, contact info) that
-  powers the public `/about` page on the frontend — `GET` is public
+  powers the public `/` page on the frontend — `GET` is public
   (no login), `PUT` is admin-only.
 
 This covers the full pipeline the project set out to build: **advertisement
@@ -132,7 +132,7 @@ Results, Certificates, and HR & Payroll — each with list/create/action
 flows, and a Print button plus CSV/Excel export on every list. It also
 includes:
 
-- An unauthenticated public campus page at `/about` (departments,
+- An unauthenticated public campus page at `/` (departments,
   facilities, faculty, achievements, career guidance, contact), editable
   by an admin from **Public Site Content** in the sidebar — no code change
   needed to update it.

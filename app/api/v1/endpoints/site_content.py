@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("", response_model=SiteContentData)
 def get_site_content(db: Session = Depends(get_db)):
-    """Public — powers the unauthenticated /about page, no login required."""
+    """Public — powers the unauthenticated / page, no login required."""
     return crud.get_site_content(db).data
 
 

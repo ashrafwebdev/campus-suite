@@ -53,10 +53,10 @@ export function SiteContentPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Public Site Content</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Edits what visitors see on the public campus page at <code className="font-mono text-xs">/about</code>.
+            Edits what visitors see on the public campus page at <code className="font-mono text-xs">/</code>.
           </p>
         </div>
-        <a href="/about" target="_blank" rel="noreferrer" className="text-sm font-medium text-indigo-600 hover:underline">
+        <a href="/" target="_blank" rel="noreferrer" className="text-sm font-medium text-indigo-600 hover:underline">
           View public page &rarr;
         </a>
       </div>

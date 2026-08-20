@@ -10,7 +10,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Dashboard', enabled: true },
+  { to: '/dashboard', label: 'Dashboard', enabled: true },
   { to: '/admissions', label: 'Admissions', enabled: true },
   { to: '/students', label: 'Students', enabled: true },
   { to: '/academic', label: 'Academic', enabled: true },
@@ -49,7 +49,6 @@ export function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
               onClick={() => setNavOpen(false)}
               className={({ isActive }) =>
                 `block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
