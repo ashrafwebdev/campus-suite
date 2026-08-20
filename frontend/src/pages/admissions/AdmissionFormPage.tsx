@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate, useParams } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
-import { ADMISSION_SOURCE, type AdmissionEnquiryCreate } from '../../types/api'
+import { ADMISSION_SOURCE, type AdmissionEnquiry, type AdmissionEnquiryCreate } from '../../types/api'
 
 const emptyForm: AdmissionEnquiryCreate = {
   name: '',
@@ -16,10 +16,36 @@ const emptyForm: AdmissionEnquiryCreate = {
   note: '',
 }
 
+function toForm(enquiry: AdmissionEnquiry): AdmissionEnquiryCreate {
+  return {
+    name: enquiry.name,
+    phone_no: enquiry.phone_no,
+    email: enquiry.email ?? '',
+    guardian_name: enquiry.guardian_name ?? '',
+    guardian_phone_no: enquiry.guardian_phone_no ?? '',
+    address: enquiry.address ?? '',
+    class_id: enquiry.class_id,
+    source: enquiry.source,
+    note: enquiry.note ?? '',
+  }
+}
+
 export function AdmissionFormPage() {
+  const { id } = useParams()
+  const isEditing = Boolean(id)
   const [form, setForm] = useState<AdmissionEnquiryCreate>(emptyForm)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  const enquiryQuery = useQuery({
+    queryKey: ['admissions', id],
+    queryFn: async () => (await api.get<AdmissionEnquiry>(`/admissions/${id}`)).data,
+    enabled: isEditing,
+  })
+
+  useEffect(() => {
+    if (enquiryQuery.data) setForm(toForm(enquiryQuery.data))
+  }, [enquiryQuery.data])
 
   const createMutation = useMutation({
     mutationFn: async (payload: AdmissionEnquiryCreate) =>
@@ -30,20 +56,32 @@ export function AdmissionFormPage() {
     },
   })
 
+  const updateMutation = useMutation({
+    mutationFn: async (payload: AdmissionEnquiryCreate) => (await api.put(`/admissions/${id}`, payload)).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admissions'] })
+      navigate('/admissions')
+    },
+  })
+
+  const saveMutation = isEditing ? updateMutation : createMutation
+
   function update<K extends keyof AdmissionEnquiryCreate>(key: K, value: AdmissionEnquiryCreate[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    createMutation.mutate(form)
+    saveMutation.mutate(form)
   }
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">New Admission Enquiry</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        {isEditing ? 'Edit Admission Enquiry' : 'New Admission Enquiry'}
+      </h1>
       <p className="mt-1 text-sm text-slate-500">
-        Capture a lead from advertisement, website, referral, or a walk-in visit.
+        {isEditing ? 'Update this enquiry’s details.' : 'Capture a lead from advertisement, website, referral, or a walk-in visit.'}
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-6">
@@ -125,19 +163,19 @@ export function AdmissionFormPage() {
           />
         </Field>
 
-        {createMutation.isError && (
+        {saveMutation.isError && (
           <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {apiErrorMessage(createMutation.error)}
+            {apiErrorMessage(saveMutation.error)}
           </div>
         )}
 
         <div className="flex gap-2 pt-2">
           <button
             type="submit"
-            disabled={createMutation.isPending}
+            disabled={saveMutation.isPending}
             className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
           >
-            {createMutation.isPending ? 'Saving…' : 'Save enquiry'}
+            {saveMutation.isPending ? 'Saving…' : 'Save enquiry'}
           </button>
           <button
             type="button"

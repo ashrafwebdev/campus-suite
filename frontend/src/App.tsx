@@ -21,6 +21,8 @@ import { CertificatesPage } from './pages/certificates/CertificatesPage'
 import { HRPage } from './pages/hr/HRPage'
 import { SiteContentPage } from './pages/settings/SiteContentPage'
 import { DemoDataPage } from './pages/settings/DemoDataPage'
+import { UsersPage } from './pages/settings/UsersPage'
+import { RolesPage } from './pages/settings/RolesPage'
 
 export default function App() {
   return (
@@ -40,6 +42,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/admissions" element={<AdmissionsListPage />} />
           <Route path="/admissions/new" element={<AdmissionFormPage />} />
+          <Route path="/admissions/:id/edit" element={<AdmissionFormPage />} />
           <Route path="/students" element={<StudentsListPage />} />
           <Route path="/students/new" element={<StudentFormPage />} />
           <Route path="/students/:id/edit" element={<StudentFormPage />} />
@@ -54,6 +57,8 @@ export default function App() {
           <Route path="/hr" element={<HRPage />} />
           <Route path="/settings/site-content" element={<SiteContentPage />} />
           <Route path="/settings/demo-data" element={<DemoDataPage />} />
+          <Route path="/settings/users" element={<UsersPage />} />
+          <Route path="/settings/roles" element={<RolesPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -17,6 +17,8 @@ import {
 function HostelsSection() {
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<HostelCreate>({ name: '', address: '' })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -24,14 +26,34 @@ function HostelsSection() {
     queryFn: async () => (await api.get<Hostel[]>('/hostel')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['hostels'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: HostelCreate) => (await api.post('/hostel', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hostels'] })
+      invalidate()
       setName('')
       setAddress('')
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: HostelCreate }) =>
+      (await api.put(`/hostel/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/hostel/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this hostel? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -70,14 +92,59 @@ function HostelsSection() {
           + Add
         </PrimaryButton>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Name', 'Address']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((h) => (
-          <tr key={h.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{h.name}</td>
-            <td className="px-4 py-3 text-slate-600">{h.address ?? '—'}</td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Name', 'Address', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((h) =>
+          editingId === h.id ? (
+            <tr key={h.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.address ?? ''}
+                  onChange={(e) => setEditForm((f) => ({ ...f, address: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: h.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={h.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{h.name}</td>
+              <td className="px-4 py-3 text-slate-600">{h.address ?? '—'}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton
+                    onClick={() => {
+                      setEditingId(h.id)
+                      setEditForm({ name: h.name, address: h.address ?? '' })
+                    }}
+                  >
+                    Edit
+                  </SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(h.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )
@@ -85,6 +152,8 @@ function HostelsSection() {
 
 function RoomsSection() {
   const [form, setForm] = useState<HostelRoomCreate>({ hostel_id: 0, room_no: '', capacity: 1 })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<HostelRoomCreate>({ hostel_id: 0, room_no: '', capacity: 1 })
   const queryClient = useQueryClient()
 
   const hostelsQuery = useQuery({
@@ -96,13 +165,33 @@ function RoomsSection() {
     queryFn: async () => (await api.get<HostelRoom[]>('/hostel/rooms')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['hostel-rooms'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: HostelRoomCreate) => (await api.post('/hostel/rooms', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hostel-rooms'] })
+      invalidate()
       setForm({ hostel_id: 0, room_no: '', capacity: 1 })
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: HostelRoomCreate }) =>
+      (await api.put(`/hostel/rooms/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/hostel/rooms/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this room? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   const hostelById = new Map((hostelsQuery.data ?? []).map((h) => [h.id, h.name]))
 
@@ -165,19 +254,67 @@ function RoomsSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Room', 'Hostel', 'Occupied / Capacity']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((r) => (
-          <tr key={r.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{r.room_no}</td>
-            <td className="px-4 py-3 text-slate-600">{hostelById.get(r.hostel_id) ?? `#${r.hostel_id}`}</td>
-            <td className="px-4 py-3">
-              <Badge color={r.occupied >= r.capacity ? 'red' : 'emerald'}>
-                {r.occupied} / {r.capacity}
-              </Badge>
-            </td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Room', 'Hostel', 'Occupied / Capacity', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((r) =>
+          editingId === r.id ? (
+            <tr key={r.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.room_no}
+                  onChange={(e) => setEditForm((f) => ({ ...f, room_no: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3 text-slate-600">{hostelById.get(r.hostel_id) ?? `#${r.hostel_id}`}</td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  min={1}
+                  value={editForm.capacity ?? 1}
+                  onChange={(e) => setEditForm((f) => ({ ...f, capacity: Number(e.target.value) }))}
+                  className="input w-24"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: r.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={r.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{r.room_no}</td>
+              <td className="px-4 py-3 text-slate-600">{hostelById.get(r.hostel_id) ?? `#${r.hostel_id}`}</td>
+              <td className="px-4 py-3">
+                <Badge color={r.occupied >= r.capacity ? 'red' : 'emerald'}>
+                  {r.occupied} / {r.capacity}
+                </Badge>
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton
+                    onClick={() => {
+                      setEditingId(r.id)
+                      setEditForm({ hostel_id: r.hostel_id, room_no: r.room_no, capacity: r.capacity })
+                    }}
+                  >
+                    Edit
+                  </SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(r.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )

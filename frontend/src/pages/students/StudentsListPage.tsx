@@ -1,14 +1,24 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
 import { TableToolbar } from '../../components/ui'
 import { RESIDENCY_TYPE, STUDENT_STATUS, type Student } from '../../types/api'
 
 export function StudentsListPage() {
+  const queryClient = useQueryClient()
   const { data, isLoading, error } = useQuery({
     queryKey: ['students'],
     queryFn: async () => (await api.get<Student[]>('/students')).data,
   })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/students/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['students'] }),
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this student? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <div>
@@ -60,10 +70,10 @@ export function StudentsListPage() {
                 </td>
               </tr>
             )}
-            {error && (
+            {(error || deleteMutation.error) && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-red-600">
-                  {apiErrorMessage(error)}
+                  {apiErrorMessage(error ?? deleteMutation.error)}
                 </td>
               </tr>
             )}
@@ -93,9 +103,18 @@ export function StudentsListPage() {
                 </td>
                 <td className="px-4 py-3 text-slate-600">{STUDENT_STATUS[student.status]}</td>
                 <td className="px-4 py-3 text-right">
-                  <Link to={`/students/${student.id}/edit`} className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                    Edit
-                  </Link>
+                  <div className="flex justify-end gap-3">
+                    <Link to={`/students/${student.id}/edit`} className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(student.id)}
+                      disabled={deleteMutation.isPending}
+                      className="text-sm font-medium text-red-600 hover:text-red-500 disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -35,6 +35,15 @@ export function AdmissionsListPage() {
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/admissions/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admissions'] }),
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this enquiry? This cannot be undone.')) deleteMutation.mutate(id)
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -87,9 +96,9 @@ export function AdmissionsListPage() {
         />
       </div>
 
-      {convertMutation.isError && (
+      {(convertMutation.isError || deleteMutation.isError) && (
         <div className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {apiErrorMessage(convertMutation.error)}
+          {apiErrorMessage(convertMutation.error ?? deleteMutation.error)}
         </div>
       )}
 
@@ -141,23 +150,38 @@ export function AdmissionsListPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  {enquiry.status !== 4 && enquiry.status !== 5 && (
-                    <button
-                      onClick={() => convertMutation.mutate(enquiry.id)}
-                      disabled={convertMutation.isPending}
-                      className="rounded-md border border-emerald-300 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
-                    >
-                      Convert to student
-                    </button>
-                  )}
-                  {enquiry.status === 4 && enquiry.student_id && (
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {enquiry.status !== 4 && enquiry.status !== 5 && (
+                      <button
+                        onClick={() => convertMutation.mutate(enquiry.id)}
+                        disabled={convertMutation.isPending}
+                        className="rounded-md border border-emerald-300 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 disabled:opacity-50"
+                      >
+                        Convert to student
+                      </button>
+                    )}
+                    {enquiry.status === 4 && enquiry.student_id && (
+                      <Link
+                        to="/students"
+                        className="text-xs font-medium text-indigo-600 hover:underline"
+                      >
+                        View student →
+                      </Link>
+                    )}
                     <Link
-                      to="/students"
-                      className="text-xs font-medium text-indigo-600 hover:underline"
+                      to={`/admissions/${enquiry.id}/edit`}
+                      className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
                     >
-                      View student →
+                      Edit
                     </Link>
-                  )}
+                    <button
+                      onClick={() => handleDelete(enquiry.id)}
+                      disabled={deleteMutation.isPending}
+                      className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -16,8 +16,14 @@ import {
   type PayrollGenerate,
 } from '../../types/api'
 
+interface EmployeeEditForm extends EmployeeCreate {
+  status?: number
+}
+
 function EmployeesSection() {
   const [form, setForm] = useState<EmployeeCreate>({ name: '', designation: '' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<EmployeeEditForm>({ name: '', designation: '' })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -25,13 +31,45 @@ function EmployeesSection() {
     queryFn: async () => (await api.get<Employee[]>('/hr/employees')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['employees'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: EmployeeCreate) => (await api.post('/hr/employees', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['employees'] })
+      invalidate()
       setForm({ name: '', designation: '' })
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: EmployeeEditForm }) =>
+      (await api.put(`/hr/employees/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/hr/employees/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function startEdit(e: Employee) {
+    setEditingId(e.id)
+    setEditForm({
+      name: e.name,
+      designation: e.designation,
+      phone_no: e.phone_no ?? '',
+      email: e.email ?? '',
+      basic_salary: e.basic_salary,
+      status: e.status,
+    })
+  }
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this employee? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -87,24 +125,86 @@ function EmployeesSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
       <Table
-        columns={['Employee No.', 'Name', 'Designation', 'Basic Salary', 'Status']}
+        columns={['Employee No.', 'Name', 'Designation', 'Basic Salary', 'Status', '']}
         isLoading={isLoading}
         error={error}
         isEmpty={data?.length === 0}
       >
-        {data?.map((e) => (
-          <tr key={e.id}>
-            <td className="px-4 py-3 font-mono text-xs text-slate-500">{e.employee_no}</td>
-            <td className="px-4 py-3 font-medium text-slate-900">{e.name}</td>
-            <td className="px-4 py-3 text-slate-600">{e.designation}</td>
-            <td className="px-4 py-3 text-slate-600">{e.basic_salary}</td>
-            <td className="px-4 py-3">
-              <Badge color={e.status === 1 ? 'emerald' : 'slate'}>{EMPLOYEE_STATUS[e.status]}</Badge>
-            </td>
-          </tr>
-        ))}
+        {data?.map((e) =>
+          editingId === e.id ? (
+            <tr key={e.id} className="bg-slate-50">
+              <td className="px-4 py-3 font-mono text-xs text-slate-500">{e.employee_no}</td>
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.name}
+                  onChange={(ev) => setEditForm((f) => ({ ...f, name: ev.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.designation}
+                  onChange={(ev) => setEditForm((f) => ({ ...f, designation: ev.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={editForm.basic_salary ?? ''}
+                  onChange={(ev) => setEditForm((f) => ({ ...f, basic_salary: ev.target.value }))}
+                  className="input w-28"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <select
+                  value={editForm.status ?? 1}
+                  onChange={(ev) => setEditForm((f) => ({ ...f, status: Number(ev.target.value) }))}
+                  className="input"
+                >
+                  {Object.entries(EMPLOYEE_STATUS).map(([v, label]) => (
+                    <option key={v} value={v}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: e.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={e.id}>
+              <td className="px-4 py-3 font-mono text-xs text-slate-500">{e.employee_no}</td>
+              <td className="px-4 py-3 font-medium text-slate-900">{e.name}</td>
+              <td className="px-4 py-3 text-slate-600">{e.designation}</td>
+              <td className="px-4 py-3 text-slate-600">{e.basic_salary}</td>
+              <td className="px-4 py-3">
+                <Badge color={e.status === 1 ? 'emerald' : 'slate'}>{EMPLOYEE_STATUS[e.status]}</Badge>
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton onClick={() => startEdit(e)}>Edit</SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(e.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )

@@ -16,6 +16,8 @@ import {
 
 function FeeHeadsSection() {
   const [name, setName] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<FeeHeadCreate>({ name: '' })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -23,13 +25,33 @@ function FeeHeadsSection() {
     queryFn: async () => (await api.get<FeeHead[]>('/fees/heads')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['fee-heads'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: FeeHeadCreate) => (await api.post('/fees/heads', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fee-heads'] })
+      invalidate()
       setName('')
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: FeeHeadCreate }) =>
+      (await api.put(`/fees/heads/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/fees/heads/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this fee head? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -55,13 +77,51 @@ function FeeHeadsSection() {
           + Add
         </PrimaryButton>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Name']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((fh) => (
-          <tr key={fh.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{fh.name}</td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Name', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((fh) =>
+          editingId === fh.id ? (
+            <tr key={fh.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: fh.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={fh.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{fh.name}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton
+                    onClick={() => {
+                      setEditingId(fh.id)
+                      setEditForm({ name: fh.name, description: fh.description ?? '' })
+                    }}
+                  >
+                    Edit
+                  </SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(fh.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )

@@ -8,6 +8,8 @@ import { BOOK_ISSUE_STATUS, type Book, type BookCreate, type BookIssue, type Boo
 
 function BooksSection() {
   const [form, setForm] = useState<BookCreate>({ title: '', author: '', total_copies: 1 })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<BookCreate>({ title: '', author: '', total_copies: 1 })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -15,13 +17,45 @@ function BooksSection() {
     queryFn: async () => (await api.get<Book[]>('/library/books')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['books'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: BookCreate) => (await api.post('/library/books', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['books'] })
+      invalidate()
       setForm({ title: '', author: '', total_copies: 1 })
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: BookCreate }) =>
+      (await api.put(`/library/books/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/library/books/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function startEdit(b: Book) {
+    setEditingId(b.id)
+    setEditForm({
+      title: b.title,
+      isbn: b.isbn ?? '',
+      author: b.author ?? '',
+      publisher: b.publisher ?? '',
+      category: b.category ?? '',
+      total_copies: b.total_copies,
+    })
+  }
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this book? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -69,19 +103,66 @@ function BooksSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Title', 'Author', 'Available / Total']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((b) => (
-          <tr key={b.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{b.title}</td>
-            <td className="px-4 py-3 text-slate-600">{b.author ?? '—'}</td>
-            <td className="px-4 py-3">
-              <Badge color={b.available_copies === 0 ? 'red' : 'emerald'}>
-                {b.available_copies} / {b.total_copies}
-              </Badge>
-            </td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Title', 'Author', 'Available / Total', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((b) =>
+          editingId === b.id ? (
+            <tr key={b.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.title}
+                  onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.author ?? ''}
+                  onChange={(e) => setEditForm((f) => ({ ...f, author: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  min={1}
+                  value={editForm.total_copies ?? 1}
+                  onChange={(e) => setEditForm((f) => ({ ...f, total_copies: Number(e.target.value) }))}
+                  className="input w-20"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: b.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={b.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{b.title}</td>
+              <td className="px-4 py-3 text-slate-600">{b.author ?? '—'}</td>
+              <td className="px-4 py-3">
+                <Badge color={b.available_copies === 0 ? 'red' : 'emerald'}>
+                  {b.available_copies} / {b.total_copies}
+                </Badge>
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton onClick={() => startEdit(b)}>Edit</SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(b.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )

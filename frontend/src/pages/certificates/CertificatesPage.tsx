@@ -14,6 +14,8 @@ import {
 
 function CertificateTypesSection() {
   const [form, setForm] = useState<CertificateTypeCreate>({ name: '', requires_graduation: false })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<CertificateTypeCreate>({ name: '', requires_graduation: false })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -21,13 +23,38 @@ function CertificateTypesSection() {
     queryFn: async () => (await api.get<CertificateType[]>('/certificates/types')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['certificate-types'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: CertificateTypeCreate) => (await api.post('/certificates/types', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['certificate-types'] })
+      invalidate()
       setForm({ name: '', requires_graduation: false })
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: CertificateTypeCreate }) =>
+      (await api.put(`/certificates/types/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/certificates/types/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function startEdit(t: CertificateType) {
+    setEditingId(t.id)
+    setEditForm({ name: t.name, description: t.description ?? '', requires_graduation: t.requires_graduation })
+  }
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this certificate type? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -77,16 +104,55 @@ function CertificateTypesSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Name', 'Requires graduation']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((t) => (
-          <tr key={t.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{t.name}</td>
-            <td className="px-4 py-3">
-              <Badge color={t.requires_graduation ? 'amber' : 'slate'}>{t.requires_graduation ? 'Yes' : 'No'}</Badge>
-            </td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Name', 'Requires graduation', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((t) =>
+          editingId === t.id ? (
+            <tr key={t.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input
+                  value={editForm.name}
+                  onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+                  className="input"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  type="checkbox"
+                  checked={editForm.requires_graduation ?? false}
+                  onChange={(e) => setEditForm((f) => ({ ...f, requires_graduation: e.target.checked }))}
+                  className="h-4 w-4"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: t.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={t.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{t.name}</td>
+              <td className="px-4 py-3">
+                <Badge color={t.requires_graduation ? 'amber' : 'slate'}>{t.requires_graduation ? 'Yes' : 'No'}</Badge>
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton onClick={() => startEdit(t)}>Edit</SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(t.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../lib/api'
-import { Badge, ErrorNote, Field, PrimaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
+import { Badge, ErrorNote, Field, PrimaryButton, SecondaryButton, SectionCard, Table, TableToolbar } from '../../components/ui'
 import type { SchoolClass, Student, Subject } from '../../types/api'
 import {
   type Exam,
@@ -17,6 +17,8 @@ import {
 
 function ExamsSection() {
   const [name, setName] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editName, setEditName] = useState('')
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -24,13 +26,33 @@ function ExamsSection() {
     queryFn: async () => (await api.get<Exam[]>('/exams')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['exams'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: ExamCreate) => (await api.post('/exams', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exams'] })
+      invalidate()
       setName('')
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: ExamCreate }) =>
+      (await api.put(`/exams/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/exams/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this exam? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -54,13 +76,47 @@ function ExamsSection() {
           + Add
         </PrimaryButton>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Name']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((e) => (
-          <tr key={e.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{e.name}</td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Name', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((e) =>
+          editingId === e.id ? (
+            <tr key={e.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input value={editName} onChange={(ev) => setEditName(ev.target.value)} className="input" />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: e.id, payload: { name: editName } })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={e.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{e.name}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton
+                    onClick={() => {
+                      setEditingId(e.id)
+                      setEditName(e.name)
+                    }}
+                  >
+                    Edit
+                  </SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(e.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )
@@ -68,6 +124,8 @@ function ExamsSection() {
 
 function GradeScalesSection() {
   const [form, setForm] = useState<GradeScaleCreate>({ name: '', min_percent: '', max_percent: '', grade_point: '' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<GradeScaleCreate>({ name: '', min_percent: '', max_percent: '', grade_point: '' })
   const queryClient = useQueryClient()
 
   const { data, isLoading, error } = useQuery({
@@ -75,13 +133,38 @@ function GradeScalesSection() {
     queryFn: async () => (await api.get<GradeScale[]>('/exams/grade-scales')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['grade-scales'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: GradeScaleCreate) => (await api.post('/exams/grade-scales', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['grade-scales'] })
+      invalidate()
       setForm({ name: '', min_percent: '', max_percent: '', grade_point: '' })
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: GradeScaleCreate }) =>
+      (await api.put(`/exams/grade-scales/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/exams/grade-scales/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function startEdit(g: GradeScale) {
+    setEditingId(g.id)
+    setEditForm({ name: g.name, min_percent: g.min_percent, max_percent: g.max_percent, grade_point: g.grade_point })
+  }
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this grade scale? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   return (
     <SectionCard
@@ -145,17 +228,70 @@ function GradeScalesSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
-      <Table columns={['Grade', 'Range', 'GPA']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
-        {data?.map((g) => (
-          <tr key={g.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{g.name}</td>
-            <td className="px-4 py-3 text-slate-600">
-              {g.min_percent}% – {g.max_percent}%
-            </td>
-            <td className="px-4 py-3 text-slate-600">{g.grade_point}</td>
-          </tr>
-        ))}
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
+      <Table columns={['Grade', 'Range', 'GPA', '']} isLoading={isLoading} error={error} isEmpty={data?.length === 0}>
+        {data?.map((g) =>
+          editingId === g.id ? (
+            <tr key={g.id} className="bg-slate-50">
+              <td className="px-4 py-3">
+                <input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} className="input" />
+              </td>
+              <td className="px-4 py-3">
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    value={editForm.min_percent}
+                    onChange={(e) => setEditForm((f) => ({ ...f, min_percent: e.target.value }))}
+                    className="input w-20"
+                  />
+                  <span>–</span>
+                  <input
+                    type="number"
+                    value={editForm.max_percent}
+                    onChange={(e) => setEditForm((f) => ({ ...f, max_percent: e.target.value }))}
+                    className="input w-20"
+                  />
+                </div>
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editForm.grade_point}
+                  onChange={(e) => setEditForm((f) => ({ ...f, grade_point: e.target.value }))}
+                  className="input w-20"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: g.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={g.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{g.name}</td>
+              <td className="px-4 py-3 text-slate-600">
+                {g.min_percent}% – {g.max_percent}%
+              </td>
+              <td className="px-4 py-3 text-slate-600">{g.grade_point}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton onClick={() => startEdit(g)}>Edit</SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(g.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )
@@ -163,6 +299,8 @@ function GradeScalesSection() {
 
 function ExamRulesSection() {
   const [form, setForm] = useState<ExamRuleCreate>({ exam_id: 0, class_id: 0, subject_id: 0, total_marks: '100', pass_marks: '33' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState<{ total_marks: string; pass_marks: string }>({ total_marks: '', pass_marks: '' })
   const queryClient = useQueryClient()
 
   const examsQuery = useQuery({ queryKey: ['exams'], queryFn: async () => (await api.get<Exam[]>('/exams')).data })
@@ -179,13 +317,33 @@ function ExamRulesSection() {
     queryFn: async () => (await api.get<ExamRule[]>('/exams/rules')).data,
   })
 
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['exam-rules'] })
+
   const createMutation = useMutation({
     mutationFn: async (payload: ExamRuleCreate) => (await api.post('/exams/rules', payload)).data,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exam-rules'] })
+      invalidate()
       setForm((f) => ({ ...f, subject_id: 0 }))
     },
   })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, payload }: { id: number; payload: { total_marks: string; pass_marks: string } }) =>
+      (await api.put(`/exams/rules/${id}`, payload)).data,
+    onSuccess: () => {
+      invalidate()
+      setEditingId(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/exams/rules/${id}`),
+    onSuccess: invalidate,
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this exam rule? This cannot be undone.')) deleteMutation.mutate(id)
+  }
 
   const examById = new Map((examsQuery.data ?? []).map((e) => [e.id, e.name]))
   const classById = new Map((classesQuery.data ?? []).map((c) => [c.id, c.name]))
@@ -289,22 +447,72 @@ function ExamRulesSection() {
           </PrimaryButton>
         </div>
       </form>
-      <ErrorNote error={createMutation.error} />
+      <ErrorNote error={createMutation.error ?? updateMutation.error ?? deleteMutation.error} />
       <Table
-        columns={['Exam', 'Class', 'Subject', 'Total', 'Pass']}
+        columns={['Exam', 'Class', 'Subject', 'Total', 'Pass', '']}
         isLoading={isLoading}
         error={error}
         isEmpty={data?.length === 0}
       >
-        {data?.map((r) => (
-          <tr key={r.id}>
-            <td className="px-4 py-3 font-medium text-slate-900">{examById.get(r.exam_id) ?? `#${r.exam_id}`}</td>
-            <td className="px-4 py-3 text-slate-600">{classById.get(r.class_id) ?? `#${r.class_id}`}</td>
-            <td className="px-4 py-3 text-slate-600">{subjectById.get(r.subject_id) ?? `#${r.subject_id}`}</td>
-            <td className="px-4 py-3 text-slate-600">{r.total_marks}</td>
-            <td className="px-4 py-3 text-slate-600">{r.pass_marks}</td>
-          </tr>
-        ))}
+        {data?.map((r) =>
+          editingId === r.id ? (
+            <tr key={r.id} className="bg-slate-50">
+              <td className="px-4 py-3 text-slate-900">{examById.get(r.exam_id) ?? `#${r.exam_id}`}</td>
+              <td className="px-4 py-3 text-slate-600">{classById.get(r.class_id) ?? `#${r.class_id}`}</td>
+              <td className="px-4 py-3 text-slate-600">{subjectById.get(r.subject_id) ?? `#${r.subject_id}`}</td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  value={editForm.total_marks}
+                  onChange={(e) => setEditForm((f) => ({ ...f, total_marks: e.target.value }))}
+                  className="input w-24"
+                />
+              </td>
+              <td className="px-4 py-3">
+                <input
+                  type="number"
+                  value={editForm.pass_marks}
+                  onChange={(e) => setEditForm((f) => ({ ...f, pass_marks: e.target.value }))}
+                  className="input w-24"
+                />
+              </td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <PrimaryButton
+                    onClick={() => updateMutation.mutate({ id: r.id, payload: editForm })}
+                    disabled={updateMutation.isPending}
+                  >
+                    Save
+                  </PrimaryButton>
+                  <SecondaryButton onClick={() => setEditingId(null)}>Cancel</SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr key={r.id}>
+              <td className="px-4 py-3 font-medium text-slate-900">{examById.get(r.exam_id) ?? `#${r.exam_id}`}</td>
+              <td className="px-4 py-3 text-slate-600">{classById.get(r.class_id) ?? `#${r.class_id}`}</td>
+              <td className="px-4 py-3 text-slate-600">{subjectById.get(r.subject_id) ?? `#${r.subject_id}`}</td>
+              <td className="px-4 py-3 text-slate-600">{r.total_marks}</td>
+              <td className="px-4 py-3 text-slate-600">{r.pass_marks}</td>
+              <td className="px-4 py-3 text-right">
+                <div className="flex justify-end gap-2">
+                  <SecondaryButton
+                    onClick={() => {
+                      setEditingId(r.id)
+                      setEditForm({ total_marks: r.total_marks, pass_marks: r.pass_marks })
+                    }}
+                  >
+                    Edit
+                  </SecondaryButton>
+                  <SecondaryButton onClick={() => handleDelete(r.id)} disabled={deleteMutation.isPending}>
+                    Delete
+                  </SecondaryButton>
+                </div>
+              </td>
+            </tr>
+          ),
+        )}
       </Table>
     </SectionCard>
   )
@@ -478,6 +686,78 @@ function MarksAndResultsSection() {
   )
 }
 
+function ResultsSection() {
+  const queryClient = useQueryClient()
+
+  const examsQuery = useQuery({ queryKey: ['exams'], queryFn: async () => (await api.get<Exam[]>('/exams')).data })
+  const studentsQuery = useQuery({
+    queryKey: ['students'],
+    queryFn: async () => (await api.get<Student[]>('/students')).data,
+  })
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['results'],
+    queryFn: async () => (await api.get<Result[]>('/exams/results')).data,
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => api.delete(`/exams/results/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['results'] }),
+  })
+
+  function handleDelete(id: number) {
+    if (window.confirm('Delete this generated result? This cannot be undone.')) deleteMutation.mutate(id)
+  }
+
+  const examById = new Map((examsQuery.data ?? []).map((e) => [e.id, e.name]))
+  const studentById = new Map((studentsQuery.data ?? []).map((s) => [s.id, s.name]))
+
+  return (
+    <SectionCard
+      title="All Results"
+      description="Every generated result; delete one to re-generate it after correcting a mark."
+      action={
+        <TableToolbar
+          title="Results"
+          filename="results"
+          rows={data}
+          columns={[
+            { label: 'Exam', value: (r) => examById.get(r.exam_id) ?? `#${r.exam_id}` },
+            { label: 'Student', value: (r) => studentById.get(r.student_id) ?? `#${r.student_id}` },
+            { label: 'Percentage', value: (r) => r.percentage },
+            { label: 'Grade', value: (r) => r.grade ?? '' },
+            { label: 'Result', value: (r) => (r.is_pass ? 'Pass' : 'Fail') },
+          ]}
+        />
+      }
+    >
+      <ErrorNote error={deleteMutation.error} />
+      <Table
+        columns={['Exam', 'Student', 'Percentage', 'Grade', 'Result', '']}
+        isLoading={isLoading}
+        error={error}
+        isEmpty={data?.length === 0}
+      >
+        {data?.map((r) => (
+          <tr key={r.id}>
+            <td className="px-4 py-3 font-medium text-slate-900">{examById.get(r.exam_id) ?? `#${r.exam_id}`}</td>
+            <td className="px-4 py-3 text-slate-600">{studentById.get(r.student_id) ?? `#${r.student_id}`}</td>
+            <td className="px-4 py-3 text-slate-600">{r.percentage}%</td>
+            <td className="px-4 py-3 text-slate-600">{r.grade ?? '—'}</td>
+            <td className="px-4 py-3">
+              <Badge color={r.is_pass ? 'emerald' : 'red'}>{r.is_pass ? 'Pass' : 'Fail'}</Badge>
+            </td>
+            <td className="px-4 py-3 text-right">
+              <SecondaryButton onClick={() => handleDelete(r.id)} disabled={deleteMutation.isPending}>
+                Delete
+              </SecondaryButton>
+            </td>
+          </tr>
+        ))}
+      </Table>
+    </SectionCard>
+  )
+}
+
 export function ExamsPage() {
   return (
     <div>
@@ -488,6 +768,7 @@ export function ExamsPage() {
         <GradeScalesSection />
         <ExamRulesSection />
         <MarksAndResultsSection />
+        <ResultsSection />
       </div>
     </div>
   )

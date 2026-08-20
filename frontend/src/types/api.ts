@@ -12,12 +12,40 @@ export interface Role {
   permissions: Permission[]
 }
 
+export interface RoleCreate {
+  name: string
+  permission_ids?: number[]
+}
+
 export interface CurrentUser {
   id: number
   name: string
   email: string
   is_active: boolean
   role: Role | null
+}
+
+export interface User {
+  id: number
+  name: string
+  email: string
+  is_active: boolean
+  role: Role | null
+}
+
+export interface UserCreate {
+  name: string
+  email: string
+  password: string
+  role_id?: number | null
+}
+
+export interface UserUpdate {
+  name?: string
+  email?: string
+  password?: string
+  role_id?: number | null
+  is_active?: boolean
 }
 
 export const ADMISSION_STATUS: Record<number, string> = {
@@ -124,6 +152,22 @@ export interface SchoolClass {
 export interface SchoolClassCreate {
   name: string
   order?: number
+}
+
+export interface Section {
+  id: number
+  name: string
+  capacity: number
+  class_id: number
+  teacher_id: number | null
+  is_active: boolean
+}
+
+export interface SectionCreate {
+  name: string
+  capacity?: number
+  class_id: number
+  teacher_id?: number | null
 }
 
 export const SUBJECT_TYPE: Record<number, string> = {
@@ -348,6 +392,19 @@ export interface RouteCreate {
   name: string
   fare?: string
   vehicle_id?: number | null
+}
+
+export interface RouteStop {
+  id: number
+  route_id: number
+  name: string
+  sequence: number
+}
+
+export interface RouteStopCreate {
+  route_id: number
+  name: string
+  sequence?: number
 }
 
 export const TRANSPORT_ALLOCATION_STATUS: Record<number, string> = { 1: 'Active', 2: 'Ended' }
