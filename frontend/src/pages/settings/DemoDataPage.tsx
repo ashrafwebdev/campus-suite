@@ -52,11 +52,16 @@ export function DemoDataPage() {
   const installMutation = useMutation({
     mutationFn: async () => (await api.post<DemoDataStatus>('/demo-data/install')).data,
     onSuccess: (result) => queryClient.setQueryData(['demo-data-status'], result),
+    // A failed install (e.g. a dropped connection partway through) can still
+    // have created and tracked some rows server-side -- refetch so the page
+    // reflects that instead of staying stuck on a stale "not installed" state.
+    onError: () => queryClient.invalidateQueries({ queryKey: ['demo-data-status'] }),
   })
 
   const removeMutation = useMutation({
     mutationFn: async () => (await api.post<DemoDataStatus>('/demo-data/remove')).data,
     onSuccess: (result) => queryClient.setQueryData(['demo-data-status'], result),
+    onError: () => queryClient.invalidateQueries({ queryKey: ['demo-data-status'] }),
   })
 
   function handleRemove() {
@@ -91,6 +96,12 @@ export function DemoDataPage() {
             {installMutation.isSuccess && <span className="text-sm text-emerald-600">Installed.</span>}
           </div>
           <ErrorNote error={installMutation.error} />
+          {installMutation.isError && (
+            <p className="mt-2 text-xs text-slate-500">
+              If this failed partway through, some sample data may already be installed — this page has refreshed
+              to reflect that. Use Remove sample data below, then try installing again.
+            </p>
+          )}
         </SectionCard>
 
         <SectionCard title="Remove sample data" description="Deletes exactly the rows the installer created, nothing else.">

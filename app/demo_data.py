@@ -74,8 +74,13 @@ def demo_data_installed(db: Session) -> bool:
     return db.query(DemoDataRecord).first() is not None
 
 
-def _track(db: Session, obj) -> None:
-    db.add(DemoDataRecord(table_name=obj.__tablename__, record_id=obj.id))
+# How many tracked rows to batch before committing the ledger. Installing
+# touches ~150-200 rows across every module, each already a network round
+# trip to the database on its own -- committing the ledger after every
+# single one would roughly double that. Batching keeps the ledger honest
+# (a crash mid-install never leaves more than one batch untracked) without
+# doubling the request's total round-trip count.
+_LEDGER_COMMIT_BATCH = 20
 
 
 def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
@@ -83,9 +88,28 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         raise ValueError("Demo data is already installed")
 
     counts: dict[str, int] = {}
+    untracked_since_commit = 0
 
     def bump(table: str, n: int = 1) -> None:
         counts[table] = counts.get(table, 0) + n
+
+    def _track(db: Session, obj) -> None:
+        nonlocal untracked_since_commit
+        db.add(DemoDataRecord(table_name=obj.__tablename__, record_id=obj.id))
+        untracked_since_commit += 1
+        if untracked_since_commit >= _LEDGER_COMMIT_BATCH:
+            db.commit()
+            untracked_since_commit = 0
+
+    def _flush() -> None:
+        # Called at the end of each section below, in addition to the
+        # every-20 batches inside long loops -- so a crash right after a
+        # whole section (e.g. all employees created, about to start
+        # payroll) can never leave that section's rows outside the ledger.
+        nonlocal untracked_since_commit
+        if untracked_since_commit:
+            db.commit()
+            untracked_since_commit = 0
 
     today = date.today()
 
@@ -109,8 +133,9 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
             _track(db, sec)
             bump("sections")
             sections_by_class[c.id].append(sec)
+    _flush()
 
-    # -- Students: 3 per section, mixed day-scholar / hosteller -----------
+    # -- Students: 2 per section, mixed day-scholar / hosteller -----------
     first_names = [
         "Aarav", "Vivaan", "Aditya", "Ishaan", "Kabir", "Riya", "Ananya", "Diya",
         "Myra", "Sara", "Arjun", "Kian", "Zoya", "Neha", "Rohan", "Tara", "Yash", "Meera",
@@ -119,7 +144,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
     name_i = 0
     for c in classes:
         for sec in sections_by_class[c.id]:
-            for _ in range(3):
+            for _ in range(2):
                 name = f"{first_names[name_i % len(first_names)]} Sharma"
                 name_i += 1
                 st = student.create_student(
@@ -139,6 +164,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
                 _track(db, st)
                 bump("students")
                 students.append(st)
+    _flush()
 
     # -- Admission enquiries -----------------------------------------------
     for i, (name, src, status) in enumerate([
@@ -163,11 +189,12 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         enq.status = status
         _track(db, enq)
         bump("admission_enquiries")
+    _flush()
 
-    # -- Attendance: last 5 weekdays, per class -----------------------------
+    # -- Attendance: last 3 weekdays, per class -----------------------------
     day = today
     marked_days = 0
-    while marked_days < 5:
+    while marked_days < 3:
         day -= timedelta(days=1)
         if day.weekday() >= 5:
             continue
@@ -184,6 +211,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
             for row in rows:
                 _track(db, row)
             bump("attendance", len(rows))
+    _flush()
 
     # -- Exam: mid-term, one rule per (class, subject), marks + results ----
     ex = exam.create_exam(db, ExamCreate(name="Mid-Term Examination"))
@@ -203,6 +231,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         )
         _track(db, gs)
         bump("grade_scales")
+    _flush()
 
     subjects_by_class: dict[int, list[Subject]] = {c.id: academic.list_subjects(db, c.id) for c in classes}
     for c in classes:
@@ -212,6 +241,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
             )
             _track(db, rule)
             bump("exam_rules")
+    _flush()
 
     for i, s in enumerate(students):
         for subj in subjects_by_class.get(s.class_id, []):
@@ -224,6 +254,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         result = exam.generate_result(db, ex.id, s.id)
         _track(db, result)
         bump("results")
+    _flush()
 
     # -- Fees: tuition fee head, one invoice per student, some paid --------
     tuition = fee.create_fee_head(db, FeeHeadCreate(name="Tuition Fee", description="Term tuition fee"))
@@ -257,6 +288,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
             )
             _track(db, pay)
             bump("payments")
+    _flush()
 
     # -- Hostel: one hostel, 4 rooms, allocate a third of students ---------
     hostel_obj = hostel.create_hostel(db, HostelCreate(name="Campus Hostel", address="North Campus, Block C"))
@@ -274,6 +306,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         alloc = hostel.allocate(db, HostelAllocationCreate(student_id=s.id, room_id=rooms[i % len(rooms)].id))
         _track(db, alloc)
         bump("hostel_allocations")
+    _flush()
 
     # -- Transport: one vehicle + route, allocate a few day scholars -------
     vehicle = transport.create_vehicle(
@@ -298,6 +331,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         )
         _track(db, alloc)
         bump("transport_allocations")
+    _flush()
 
     # -- Library: a handful of books, a couple of issues -------------------
     book_titles = [
@@ -320,6 +354,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         )
         _track(db, issue)
         bump("book_issues")
+    _flush()
 
     # -- Certificates: bonafide certificate issued to a few students -------
     cert_type = certificate.create_certificate_type(db, CertificateTypeCreate(name="Bonafide Certificate", description="Confirms current enrollment"))
@@ -331,6 +366,7 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         )
         _track(db, cert)
         bump("certificates")
+    _flush()
 
     # -- HR: a handful of staff, one leave request, payroll for this month -
     employees = []
@@ -347,12 +383,14 @@ def install_demo_data(db: Session, actor_user_id: int | None) -> dict[str, int]:
         _track(db, emp)
         bump("employees")
         employees.append(emp)
+    _flush()
 
     leave = hr.request_leave(
         db, LeaveRequestCreate(employee_id=employees[0].id, leave_type=2, start_date=today + timedelta(days=2), end_date=today + timedelta(days=3), reason="Fever, needs rest.")
     )
     _track(db, leave)
     bump("leave_requests")
+    _flush()
 
     for i, emp in enumerate(employees):
         payroll = hr.generate_payroll(

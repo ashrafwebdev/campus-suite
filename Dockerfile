@@ -29,4 +29,4 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 # Shell form so ${PORT} is resolved at container start, not at build time --
 # hosts like Render assign a dynamic port via the PORT env var; local/compose
 # use falls back to 8000.
-CMD ["sh", "-c", "gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT:-8000} --access-logfile -"]
+CMD ["sh", "-c", "gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --timeout 120 --bind 0.0.0.0:${PORT:-8000} --access-logfile -"]

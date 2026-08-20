@@ -21,6 +21,17 @@ def install(db: Session = Depends(get_db), current_user: User = Depends(get_curr
         counts = install_demo_data(db, actor_user_id=current_user.id)
     except ValueError as exc:
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from exc
+    except Exception as exc:
+        # The ledger is committed in batches as install proceeds (see
+        # app/demo_data.py), so even a failure partway through leaves an
+        # accurate, if partial, `demo_data_installed()` state -- point the
+        # caller at "Remove sample data" to clean that up before retrying,
+        # rather than surfacing a bare 500.
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            f"Demo data install failed partway through ({exc}). Some sample data may already be "
+            "installed -- use Remove sample data to clean up, then try again.",
+        ) from exc
     return DemoDataStatus(installed=True, counts=counts)
 
 
