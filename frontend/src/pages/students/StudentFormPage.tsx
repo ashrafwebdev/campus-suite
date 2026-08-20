@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { api, apiErrorMessage } from '../../lib/api'
-import { RESIDENCY_TYPE, type SchoolClass, type StudentCreate } from '../../types/api'
+import { RESIDENCY_TYPE, type SchoolClass, type Student, type StudentCreate } from '../../types/api'
 
 const emptyForm: StudentCreate = {
   name: '',
@@ -17,7 +17,23 @@ const emptyForm: StudentCreate = {
   class_id: null,
 }
 
+function toForm(student: Student): StudentCreate {
+  return {
+    name: student.name,
+    phone_no: student.phone_no ?? '',
+    email: student.email ?? '',
+    guardian_name: student.guardian_name ?? '',
+    guardian_phone_no: student.guardian_phone_no ?? '',
+    permanent_address: student.permanent_address ?? '',
+    residency_type: student.residency_type,
+    hostel_room_no: student.hostel_room_no ?? '',
+    class_id: student.class_id,
+  }
+}
+
 export function StudentFormPage() {
+  const { id } = useParams()
+  const isEditing = Boolean(id)
   const [form, setForm] = useState<StudentCreate>(emptyForm)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -27,6 +43,16 @@ export function StudentFormPage() {
     queryFn: async () => (await api.get<SchoolClass[]>('/academic/classes')).data,
   })
 
+  const studentQuery = useQuery({
+    queryKey: ['students', id],
+    queryFn: async () => (await api.get<Student>(`/students/${id}`)).data,
+    enabled: isEditing,
+  })
+
+  useEffect(() => {
+    if (studentQuery.data) setForm(toForm(studentQuery.data))
+  }, [studentQuery.data])
+
   const createMutation = useMutation({
     mutationFn: async (payload: StudentCreate) => (await api.post('/students', payload)).data,
     onSuccess: () => {
@@ -35,21 +61,35 @@ export function StudentFormPage() {
     },
   })
 
+  const updateMutation = useMutation({
+    mutationFn: async (payload: StudentCreate) => (await api.put(`/students/${id}`, payload)).data,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] })
+      navigate('/students')
+    },
+  })
+
+  const saveMutation = isEditing ? updateMutation : createMutation
+
   function update<K extends keyof StudentCreate>(key: K, value: StudentCreate[K]) {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    createMutation.mutate(form)
+    saveMutation.mutate(form)
   }
 
   const isHosteller = form.residency_type === 2
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Enroll Student</h1>
-      <p className="mt-1 text-sm text-slate-500">Add a student directly, day scholar or hosteller.</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+        {isEditing ? 'Edit Student' : 'Enroll Student'}
+      </h1>
+      <p className="mt-1 text-sm text-slate-500">
+        {isEditing ? 'Update this student’s details.' : 'Add a student directly, day scholar or hosteller.'}
+      </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-6">
         <Field label="Name" required>
@@ -136,19 +176,19 @@ export function StudentFormPage() {
           )}
         </div>
 
-        {createMutation.isError && (
+        {saveMutation.isError && (
           <div className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-            {apiErrorMessage(createMutation.error)}
+            {apiErrorMessage(saveMutation.error)}
           </div>
         )}
 
         <div className="flex gap-2 pt-2">
           <button
             type="submit"
-            disabled={createMutation.isPending}
+            disabled={saveMutation.isPending}
             className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
           >
-            {createMutation.isPending ? 'Saving…' : 'Enroll student'}
+            {saveMutation.isPending ? 'Saving…' : isEditing ? 'Save changes' : 'Enroll student'}
           </button>
           <button
             type="button"

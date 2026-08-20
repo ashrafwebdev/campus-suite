@@ -49,26 +49,27 @@ export function StudentsListPage() {
               <th className="px-4 py-3">Phone</th>
               <th className="px-4 py-3">Residency</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                   Loading…
                 </td>
               </tr>
             )}
             {error && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-red-600">
+                <td colSpan={6} className="px-4 py-6 text-center text-red-600">
                   {apiErrorMessage(error)}
                 </td>
               </tr>
             )}
             {data?.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                   No students enrolled yet.
                 </td>
               </tr>
@@ -91,6 +92,11 @@ export function StudentsListPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-slate-600">{STUDENT_STATUS[student.status]}</td>
+                <td className="px-4 py-3 text-right">
+                  <Link to={`/students/${student.id}/edit`} className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                    Edit
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>

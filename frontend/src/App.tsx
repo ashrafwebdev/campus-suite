@@ -41,6 +41,7 @@ export default function App() {
           <Route path="/admissions/new" element={<AdmissionFormPage />} />
           <Route path="/students" element={<StudentsListPage />} />
           <Route path="/students/new" element={<StudentFormPage />} />
+          <Route path="/students/:id/edit" element={<StudentFormPage />} />
           <Route path="/academic" element={<AcademicPage />} />
           <Route path="/attendance" element={<AttendancePage />} />
           <Route path="/hostel" element={<HostelPage />} />
